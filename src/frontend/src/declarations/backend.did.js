@@ -13,6 +13,13 @@ export const UserRole = IDL.Variant({
   'user' : IDL.Null,
   'guest' : IDL.Null,
 });
+export const ShoppingItem = IDL.Record({
+  'productName' : IDL.Text,
+  'currency' : IDL.Text,
+  'quantity' : IDL.Nat,
+  'priceInCents' : IDL.Nat,
+  'productDescription' : IDL.Text,
+});
 export const CarType = IDL.Variant({
   'SUV' : IDL.Null,
   'midSUV' : IDL.Null,
@@ -46,6 +53,42 @@ export const Assignment = IDL.Record({
   'crewMemberId' : IDL.Principal,
   'carOwnerId' : IDL.Principal,
 });
+export const PaymentRecord = IDL.Record({
+  'status' : IDL.Text,
+  'currency' : IDL.Text,
+  'timestamp' : IDL.Int,
+  'sessionId' : IDL.Text,
+  'amount' : IDL.Nat,
+});
+export const StripeSessionStatus = IDL.Variant({
+  'completed' : IDL.Record({
+    'userPrincipal' : IDL.Opt(IDL.Text),
+    'response' : IDL.Text,
+  }),
+  'failed' : IDL.Record({ 'error' : IDL.Text }),
+});
+export const StripeConfiguration = IDL.Record({
+  'allowedCountries' : IDL.Vec(IDL.Text),
+  'secretKey' : IDL.Text,
+});
+export const http_header = IDL.Record({
+  'value' : IDL.Text,
+  'name' : IDL.Text,
+});
+export const http_request_result = IDL.Record({
+  'status' : IDL.Nat,
+  'body' : IDL.Vec(IDL.Nat8),
+  'headers' : IDL.Vec(http_header),
+});
+export const TransformationInput = IDL.Record({
+  'context' : IDL.Vec(IDL.Nat8),
+  'response' : http_request_result,
+});
+export const TransformationOutput = IDL.Record({
+  'status' : IDL.Nat,
+  'body' : IDL.Vec(IDL.Nat8),
+  'headers' : IDL.Vec(http_header),
+});
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
@@ -58,6 +101,11 @@ export const idlService = IDL.Service({
   'assignCarOwnerToCrewMember' : IDL.Func(
       [IDL.Principal, IDL.Principal, IDL.Text],
       [],
+      [],
+    ),
+  'createCheckoutSession' : IDL.Func(
+      [IDL.Vec(ShoppingItem), IDL.Text, IDL.Text],
+      [IDL.Text],
       [],
     ),
   'getActiveCarOwners' : IDL.Func(
@@ -89,21 +137,39 @@ export const idlService = IDL.Service({
       ['query'],
     ),
   'getDailySchedule' : IDL.Func([IDL.Text], [IDL.Vec(Assignment)], ['query']),
+  'getPaymentHistory' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Vec(PaymentRecord)],
+      ['query'],
+    ),
   'getScheduleForUser' : IDL.Func(
       [IDL.Principal],
       [IDL.Vec(Assignment)],
       ['query'],
     ),
   'getSkipDays' : IDL.Func([IDL.Principal], [IDL.Vec(IDL.Text)], ['query']),
+  'getStripeSessionStatus' : IDL.Func([IDL.Text], [StripeSessionStatus], []),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'isStripeConfigured' : IDL.Func([], [IDL.Bool], ['query']),
   'markAssignmentDone' : IDL.Func([IDL.Principal, IDL.Text], [], []),
+  'recordPayment' : IDL.Func(
+      [IDL.Principal, IDL.Nat, IDL.Text, IDL.Text],
+      [],
+      [],
+    ),
   'registerCarOwner' : IDL.Func(
       [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, CarType],
       [],
       [],
     ),
   'registerCrewMember' : IDL.Func([IDL.Text, IDL.Text], [], []),
+  'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
   'skipDay' : IDL.Func([IDL.Text], [], []),
+  'transform' : IDL.Func(
+      [TransformationInput],
+      [TransformationOutput],
+      ['query'],
+    ),
   'updateAssignmentStatus' : IDL.Func(
       [IDL.Principal, IDL.Text, AssignmentStatus],
       [],
@@ -120,6 +186,13 @@ export const idlFactory = ({ IDL }) => {
     'admin' : IDL.Null,
     'user' : IDL.Null,
     'guest' : IDL.Null,
+  });
+  const ShoppingItem = IDL.Record({
+    'productName' : IDL.Text,
+    'currency' : IDL.Text,
+    'quantity' : IDL.Nat,
+    'priceInCents' : IDL.Nat,
+    'productDescription' : IDL.Text,
   });
   const CarType = IDL.Variant({
     'SUV' : IDL.Null,
@@ -154,6 +227,39 @@ export const idlFactory = ({ IDL }) => {
     'crewMemberId' : IDL.Principal,
     'carOwnerId' : IDL.Principal,
   });
+  const PaymentRecord = IDL.Record({
+    'status' : IDL.Text,
+    'currency' : IDL.Text,
+    'timestamp' : IDL.Int,
+    'sessionId' : IDL.Text,
+    'amount' : IDL.Nat,
+  });
+  const StripeSessionStatus = IDL.Variant({
+    'completed' : IDL.Record({
+      'userPrincipal' : IDL.Opt(IDL.Text),
+      'response' : IDL.Text,
+    }),
+    'failed' : IDL.Record({ 'error' : IDL.Text }),
+  });
+  const StripeConfiguration = IDL.Record({
+    'allowedCountries' : IDL.Vec(IDL.Text),
+    'secretKey' : IDL.Text,
+  });
+  const http_header = IDL.Record({ 'value' : IDL.Text, 'name' : IDL.Text });
+  const http_request_result = IDL.Record({
+    'status' : IDL.Nat,
+    'body' : IDL.Vec(IDL.Nat8),
+    'headers' : IDL.Vec(http_header),
+  });
+  const TransformationInput = IDL.Record({
+    'context' : IDL.Vec(IDL.Nat8),
+    'response' : http_request_result,
+  });
+  const TransformationOutput = IDL.Record({
+    'status' : IDL.Nat,
+    'body' : IDL.Vec(IDL.Nat8),
+    'headers' : IDL.Vec(http_header),
+  });
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
@@ -166,6 +272,11 @@ export const idlFactory = ({ IDL }) => {
     'assignCarOwnerToCrewMember' : IDL.Func(
         [IDL.Principal, IDL.Principal, IDL.Text],
         [],
+        [],
+      ),
+    'createCheckoutSession' : IDL.Func(
+        [IDL.Vec(ShoppingItem), IDL.Text, IDL.Text],
+        [IDL.Text],
         [],
       ),
     'getActiveCarOwners' : IDL.Func(
@@ -197,21 +308,39 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'getDailySchedule' : IDL.Func([IDL.Text], [IDL.Vec(Assignment)], ['query']),
+    'getPaymentHistory' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Vec(PaymentRecord)],
+        ['query'],
+      ),
     'getScheduleForUser' : IDL.Func(
         [IDL.Principal],
         [IDL.Vec(Assignment)],
         ['query'],
       ),
     'getSkipDays' : IDL.Func([IDL.Principal], [IDL.Vec(IDL.Text)], ['query']),
+    'getStripeSessionStatus' : IDL.Func([IDL.Text], [StripeSessionStatus], []),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'isStripeConfigured' : IDL.Func([], [IDL.Bool], ['query']),
     'markAssignmentDone' : IDL.Func([IDL.Principal, IDL.Text], [], []),
+    'recordPayment' : IDL.Func(
+        [IDL.Principal, IDL.Nat, IDL.Text, IDL.Text],
+        [],
+        [],
+      ),
     'registerCarOwner' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, CarType],
         [],
         [],
       ),
     'registerCrewMember' : IDL.Func([IDL.Text, IDL.Text], [], []),
+    'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
     'skipDay' : IDL.Func([IDL.Text], [], []),
+    'transform' : IDL.Func(
+        [TransformationInput],
+        [TransformationOutput],
+        ['query'],
+      ),
     'updateAssignmentStatus' : IDL.Func(
         [IDL.Principal, IDL.Text, AssignmentStatus],
         [],

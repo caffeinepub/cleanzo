@@ -9,9 +9,14 @@ import Iter "mo:core/Iter";
 import List "mo:core/List";
 import Int "mo:core/Int";
 import Nat "mo:core/Nat";
+import Stripe "stripe/stripe";
+import OutCall "http-outcalls/outcall";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
+import Migration "migration";
 
+// Specify data migration function in with-clause
+(with migration = Migration.run)
 actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
@@ -54,6 +59,21 @@ actor {
     isActive : Bool;
   };
 
+  public type PaymentRecord = {
+    amount : Nat;
+    currency : Text;
+    timestamp : Int;
+    status : Text;
+    sessionId : Text;
+  };
+
+  let carOwners = Map.empty<Principal, CarOwnerProfile>();
+  let crewMembers = Map.empty<Principal, CrewMemberProfile>();
+  let assignments = List.empty<Assignment>();
+  let skipDays = Map.empty<Principal, List.List<Text>>();
+  let payments = Map.empty<Principal, List.List<PaymentRecord>>();
+  let checkoutSessions = Map.empty<Text, Principal>();
+
   module Assignment {
     public func compare(a : Assignment, b : Assignment) : Order.Order {
       switch (Text.compare(a.date, b.date)) {
@@ -63,11 +83,6 @@ actor {
     };
   };
 
-  let carOwners = Map.empty<Principal, CarOwnerProfile>();
-  let crewMembers = Map.empty<Principal, CrewMemberProfile>();
-  let assignments = List.empty<Assignment>();
-  let skipDays = Map.empty<Principal, List.List<Text>>();
-
   func getPriceSegment(carType : CarType) : Nat {
     switch (carType) {
       case (#SUV) { 449 };
@@ -76,6 +91,10 @@ actor {
   };
 
   public shared ({ caller }) func registerCarOwner(name : Text, email : Text, phone : Text, carNumber : Text, carModel : Text, carType : CarType) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only authenticated users can register as car owners");
+    };
+
     if (carOwners.containsKey(caller)) {
       Runtime.trap("Car owner already registered");
     };
@@ -96,6 +115,10 @@ actor {
   };
 
   public shared ({ caller }) func registerCrewMember(name : Text, phone : Text) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only authenticated users can register as crew members");
+    };
+
     if (crewMembers.containsKey(caller)) {
       Runtime.trap("Crew member already registered");
     };
@@ -372,4 +395,89 @@ actor {
     };
     skipDays.clear();
   };
+
+  // Stripe Payment Integration
+  var stripeConfig : ?Stripe.StripeConfiguration = null;
+
+  public shared ({ caller }) func setStripeConfiguration(config : Stripe.StripeConfiguration) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can set Stripe config");
+    };
+    stripeConfig := ?config;
+  };
+
+  public query ({ caller }) func isStripeConfigured() : async Bool {
+    stripeConfig != null;
+  };
+
+  func getStripeConfig() : Stripe.StripeConfiguration {
+    switch (stripeConfig) {
+      case (null) { Runtime.trap("Stripe needs to be configured") };
+      case (?config) { config };
+    };
+  };
+
+  public query ({ caller }) func transform(input : OutCall.TransformationInput) : async OutCall.TransformationOutput {
+    OutCall.transform(input);
+  };
+
+  public shared ({ caller }) func createCheckoutSession(items : [Stripe.ShoppingItem], successUrl : Text, cancelUrl : Text) : async Text {
+    if (not carOwners.containsKey(caller)) {
+      Runtime.trap("Unauthorized: Only car owners can create checkout sessions");
+    };
+
+    let sessionId = await Stripe.createCheckoutSession(getStripeConfig(), caller, items, successUrl, cancelUrl, transform);
+    checkoutSessions.add(sessionId, caller);
+    sessionId;
+  };
+
+  // Changed from query to shared to allow await on Stripe.getSessionStatus.
+  public shared ({ caller }) func getStripeSessionStatus(sessionId : Text) : async Stripe.StripeSessionStatus {
+    switch (checkoutSessions.get(sessionId)) {
+      case (null) {
+        if (not AccessControl.isAdmin(accessControlState, caller)) {
+          Runtime.trap("Unauthorized: Session not found or access denied");
+        };
+      };
+      case (?owner) {
+        if (caller != owner and not AccessControl.isAdmin(accessControlState, caller)) {
+          Runtime.trap("Unauthorized: Can only view your own session status or be an admin");
+        };
+      };
+    };
+    await Stripe.getSessionStatus(getStripeConfig(), sessionId, transform);
+  };
+
+  public shared ({ caller }) func recordPayment(carOwnerId : Principal, amount : Nat, currency : Text, sessionId : Text) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can record payments");
+    };
+
+    let payment : PaymentRecord = {
+      amount;
+      currency;
+      timestamp = Time.now();
+      status = "completed";
+      sessionId;
+    };
+
+    let currentPayments = switch (payments.get(carOwnerId)) {
+      case (?records) { records };
+      case (null) { List.empty<PaymentRecord>() };
+    };
+
+    currentPayments.add(payment);
+    payments.add(carOwnerId, currentPayments);
+  };
+
+  public query ({ caller }) func getPaymentHistory(user : Principal) : async [PaymentRecord] {
+    if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Can only view your own payment history or be an admin");
+    };
+    switch (payments.get(user)) {
+      case (?records) { records.toArray() };
+      case (null) { [] };
+    };
+  };
 };
+

@@ -10,11 +10,11 @@ import {
   Droplets,
   Shield,
   Sparkles,
-  Star,
   Wrench,
 } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
+import { SiFacebook, SiInstagram } from "react-icons/si";
 import { UserRole } from "../backend";
 import { CarOwnerRegistrationModal } from "../components/CarOwnerRegistrationModal";
 import { CrewRegistrationModal } from "../components/CrewRegistrationModal";
@@ -162,9 +162,9 @@ export function LandingPage() {
                 className="flex items-center gap-6 pt-2"
               >
                 {[
-                  { icon: Star, text: "4.9 rated service" },
-                  { icon: Shield, text: "Trusted by 500+ owners" },
-                  { icon: Sparkles, text: "Dry clean tech" },
+                  { icon: Sparkles, text: "Waterless dry clean tech" },
+                  { icon: Shield, text: "No water, no spots" },
+                  { icon: Clock, text: "5am–10am daily" },
                 ].map(({ icon: Icon, text }) => (
                   <div
                     key={text}
@@ -427,7 +427,7 @@ export function LandingPage() {
               variants={fadeUp}
               className="text-primary-foreground/80 mb-8 text-lg"
             >
-              Join hundreds of car owners who wake up to a clean car every day.
+              Subscribe today and wake up to a freshly cleaned car every day.
             </motion.p>
             <motion.div
               variants={fadeUp}
@@ -458,28 +458,65 @@ export function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 border-t border-border bg-card">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Droplets className="w-4 h-4 text-primary" />
-            <span className="font-display font-600 text-sm text-foreground">
-              Cleanzo
-            </span>
-            <span className="text-muted-foreground text-xs ml-2">
-              Morning dry cleaning, 5am–10am daily
-            </span>
+      <footer className="py-10 border-t border-border bg-card">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-2">
+              <Droplets className="w-4 h-4 text-primary" />
+              <span className="font-display font-600 text-sm text-foreground">
+                Cleanzo
+              </span>
+              <span className="text-muted-foreground text-xs ml-2">
+                Morning dry cleaning, 5am–10am daily
+              </span>
+            </div>
+
+            {/* Social Links */}
+            <div className="flex items-center gap-4">
+              <a
+                href="https://instagram.com/trycleanzo.in"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                data-ocid="footer.link"
+              >
+                <SiInstagram className="w-4 h-4" />
+                <span>Instagram</span>
+              </a>
+              <a
+                href="https://facebook.com/trycleanzo.in"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                data-ocid="footer.link"
+              >
+                <SiFacebook className="w-4 h-4" />
+                <span>Facebook</span>
+              </a>
+              <a
+                href="https://trycleanzo.in"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                data-ocid="footer.link"
+              >
+                <span>🌐</span>
+                <span>trycleanzo.in</span>
+              </a>
+            </div>
+
+            <p className="text-xs text-muted-foreground">
+              © {new Date().getFullYear()}. Built with ❤️ using{" "}
+              <a
+                href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-foreground transition-colors"
+              >
+                caffeine.ai
+              </a>
+            </p>
           </div>
-          <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()}. Built with ❤️ using{" "}
-            <a
-              href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline hover:text-foreground transition-colors"
-            >
-              caffeine.ai
-            </a>
-          </p>
         </div>
       </footer>
 

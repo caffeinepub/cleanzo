@@ -39,9 +39,46 @@ export interface CrewMemberProfile {
   'isActive' : boolean,
   'phone' : string,
 }
+export interface PaymentRecord {
+  'status' : string,
+  'currency' : string,
+  'timestamp' : bigint,
+  'sessionId' : string,
+  'amount' : bigint,
+}
+export interface ShoppingItem {
+  'productName' : string,
+  'currency' : string,
+  'quantity' : bigint,
+  'priceInCents' : bigint,
+  'productDescription' : string,
+}
+export interface StripeConfiguration {
+  'allowedCountries' : Array<string>,
+  'secretKey' : string,
+}
+export type StripeSessionStatus = {
+    'completed' : { 'userPrincipal' : [] | [string], 'response' : string }
+  } |
+  { 'failed' : { 'error' : string } };
+export interface TransformationInput {
+  'context' : Uint8Array,
+  'response' : http_request_result,
+}
+export interface TransformationOutput {
+  'status' : bigint,
+  'body' : Uint8Array,
+  'headers' : Array<http_header>,
+}
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
+export interface http_header { 'value' : string, 'name' : string }
+export interface http_request_result {
+  'status' : bigint,
+  'body' : Uint8Array,
+  'headers' : Array<http_header>,
+}
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'addBulkAssignments' : ActorMethod<
@@ -52,6 +89,10 @@ export interface _SERVICE {
   'assignCarOwnerToCrewMember' : ActorMethod<
     [Principal, Principal, string],
     undefined
+  >,
+  'createCheckoutSession' : ActorMethod<
+    [Array<ShoppingItem>, string, string],
+    string
   >,
   'getActiveCarOwners' : ActorMethod<
     [],
@@ -71,16 +112,22 @@ export interface _SERVICE {
   'getCarOwnerProfile' : ActorMethod<[Principal], CarOwnerProfile>,
   'getCrewMemberProfile' : ActorMethod<[Principal], CrewMemberProfile>,
   'getDailySchedule' : ActorMethod<[string], Array<Assignment>>,
+  'getPaymentHistory' : ActorMethod<[Principal], Array<PaymentRecord>>,
   'getScheduleForUser' : ActorMethod<[Principal], Array<Assignment>>,
   'getSkipDays' : ActorMethod<[Principal], Array<string>>,
+  'getStripeSessionStatus' : ActorMethod<[string], StripeSessionStatus>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
+  'isStripeConfigured' : ActorMethod<[], boolean>,
   'markAssignmentDone' : ActorMethod<[Principal, string], undefined>,
+  'recordPayment' : ActorMethod<[Principal, bigint, string, string], undefined>,
   'registerCarOwner' : ActorMethod<
     [string, string, string, string, string, CarType],
     undefined
   >,
   'registerCrewMember' : ActorMethod<[string, string], undefined>,
+  'setStripeConfiguration' : ActorMethod<[StripeConfiguration], undefined>,
   'skipDay' : ActorMethod<[string], undefined>,
+  'transform' : ActorMethod<[TransformationInput], TransformationOutput>,
   'updateAssignmentStatus' : ActorMethod<
     [Principal, string, AssignmentStatus],
     undefined

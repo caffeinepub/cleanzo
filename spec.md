@@ -1,40 +1,32 @@
-# Cleanzo - Car Dry Cleaning Service App
+# Cleanzo
 
 ## Current State
-New project. No existing code.
+Backend (Motoko) is fully built with authorization, car owner/crew registration, skip days, assignments, and subscription status. Frontend files do not exist yet.
 
 ## Requested Changes (Diff)
 
 ### Add
-- **Role-based access**: Car Owner, Crew Member, Admin roles
-- **Car Owner registration popup**: Collects name, email, phone, car number, car model. System auto-assigns price segment based on car type.
-  - Hatchback / Sedan / Mid-SUV → ₹399/month
-  - SUV (full-size) → ₹449/month
-- **Car Owner dashboard**: View subscription details, skip days in current month, view attendance/skip history
-- **Crew Member registration**: Collects name, phone, and role
-- **Crew Member dashboard**: View assigned cars for the day, mark car as cleaned/done
-- **Admin dashboard**: View all car owners, assign cars to crew members, view today's schedule, manage skip requests
-- **Skip day feature**: Car owners can skip up to N days/month; skipped days shown on the schedule so crew knows not to visit
-- **Subscription pricing logic**: Hatchback/Sedan/MidSUV = ₹399, SUV = ₹449
+- Full sign-up and sign-in flow (Internet Identity based auth via authorization component)
+- Landing page: clean, startup-feel, no fake reviews or ratings, no fake testimonials
+- Onboarding modal for new users: collect name, email, phone, car number, car model, car type -> auto-computes price
+- Car owner dashboard: subscription details, skip-day calendar, service history
+- Subscription page: pricing cards (₹399 hatchback/sedan/mid-SUV, ₹449 SUV), subscribe CTA
+- Payment page: Stripe payment integration for subscription
+- Crew member dashboard: today's assigned cars, mark-as-done
+- Admin dashboard: manage owners, crew, daily schedule, create assignments
+- Footer with social links pointing to trycleanzo.in (Instagram, Facebook, website)
+- Header with Cleanzo branding and nav
 
 ### Modify
-N/A
+- Remove all fake reviews, ratings, testimonials, experience counts
+- Social/website links updated to trycleanzo.in
 
 ### Remove
-N/A
+- All placeholder/fake social proof content
 
 ## Implementation Plan
-1. Backend actors:
-   - `CarOwner`: profile (name, email, phone, carNumber, carModel, carType, priceSegment), subscriptionStatus, skipDays list per month
-   - `CrewMember`: profile (name, phone), assignedCars per day
-   - `Admin`: assign crew to car owners, view daily schedule
-   - `Schedule`: daily entries per car owner, status (pending/done/skipped)
-2. Frontend views:
-   - Landing page with two CTAs: "Join as Car Owner" and "Join as Crew Member"
-   - Car owner registration modal (popup form)
-   - Car owner dashboard: subscription info, skip day calendar, history
-   - Crew member dashboard: today's assigned cars, mark done
-   - Admin dashboard: manage owners, crew, assignments, daily schedule
-3. Auto price segment based on car type selection during registration
-4. Skip day logic: owner marks a date as skipped; schedule reflects it
-5. Role-based routing after login
+1. Select authorization + stripe components
+2. Generate backend (already exists, minor additions for payment intent tracking)
+3. Build frontend: landing, auth flow, onboarding, car owner dashboard, crew dashboard, admin dashboard, subscription/payment pages
+4. Wire Stripe payment for subscription
+5. Add social links (trycleanzo.in) in footer
