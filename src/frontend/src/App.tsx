@@ -16,10 +16,17 @@ import {
   useCrewMemberProfile,
   useUserRole,
 } from "./hooks/useQueries";
+import { AboutPage } from "./pages/AboutPage";
 import { AdminDashboard } from "./pages/AdminDashboard";
+import { ContactPage } from "./pages/ContactPage";
 import { CrewDashboard } from "./pages/CrewDashboard";
 import { LandingPage } from "./pages/LandingPage";
 import { OwnerDashboard } from "./pages/OwnerDashboard";
+import { PricingPage } from "./pages/PricingPage";
+import { PrivacyPolicyPage } from "./pages/PrivacyPolicyPage";
+import { RefundPolicyPage } from "./pages/RefundPolicyPage";
+import { TermsPage } from "./pages/TermsPage";
+import { WhyCleanzoPage } from "./pages/WhyCleanzoPage";
 
 function RootLayout() {
   const { identity, isInitializing } = useInternetIdentity();
@@ -49,7 +56,6 @@ function RootLayout() {
     } else if (crewProfile) {
       navigate({ to: "/crew" });
     }
-    // else: stay on landing, intent-based modal will open
   }, [
     isLoggedIn,
     role,
@@ -84,39 +90,76 @@ function RootLayout() {
   );
 }
 
-const rootRoute = createRootRoute({
-  component: RootLayout,
-});
+const rootRoute = createRootRoute({ component: RootLayout });
 
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
   component: LandingPage,
 });
-
+const aboutRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/about",
+  component: AboutPage,
+});
+const whyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/why-cleanzo",
+  component: WhyCleanzoPage,
+});
+const pricingRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/pricing",
+  component: PricingPage,
+});
+const contactRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/contact",
+  component: ContactPage,
+});
 const ownerRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/owner",
   component: OwnerDashboard,
 });
-
 const crewRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/crew",
   component: CrewDashboard,
 });
-
 const adminRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/admin",
   component: AdminDashboard,
 });
+const privacyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/privacy-policy",
+  component: PrivacyPolicyPage,
+});
+const termsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/terms",
+  component: TermsPage,
+});
+const refundRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/refund-policy",
+  component: RefundPolicyPage,
+});
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
+  aboutRoute,
+  whyRoute,
+  pricingRoute,
+  contactRoute,
   ownerRoute,
   crewRoute,
   adminRoute,
+  privacyRoute,
+  termsRoute,
+  refundRoute,
 ]);
 
 const router = createRouter({ routeTree });

@@ -17,7 +17,9 @@ import {
   Car,
   CheckCircle2,
   Clock,
+  CreditCard,
   Droplets,
+  Lock,
   LogOut,
   SkipForward,
   XCircle,
@@ -52,7 +54,7 @@ const DAY_HEADERS = [
   { key: "sat", label: "S" },
 ];
 
-const MAX_SKIPS = 4;
+const MAX_SKIPS = 7;
 
 const statusConfig = {
   [AssignmentStatus.pending]: {
@@ -102,7 +104,7 @@ export function OwnerDashboard() {
 
   const handleSkipDay = async (date: Date) => {
     if (remainingSkips <= 0) {
-      toast.error("You've used all 4 skip days this month.");
+      toast.error("You've used all 7 skip days this month.");
       return;
     }
     const dateStr = format(date, "yyyy-MM-dd");
@@ -207,7 +209,6 @@ export function OwnerDashboard() {
                 )}
               </Badge>
             </div>
-
             {profile && (
               <div className="mt-4 flex flex-wrap gap-4">
                 <div className="flex items-center gap-2 text-sm text-primary-foreground/80">
@@ -221,11 +222,64 @@ export function OwnerDashboard() {
                     {CAR_TYPE_LABELS[profile.carType]}
                   </span>
                   <span>·</span>
-                  <span>₹{Number(profile.priceSegment)}/month</span>
+                  <span>&#8377;{Number(profile.priceSegment)}/month</span>
                 </div>
               </div>
             )}
           </div>
+        </motion.div>
+
+        {/* Payment Gateway Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="bg-card rounded-2xl p-6 border border-border shadow-card"
+          data-ocid="owner.payment.card"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                <CreditCard className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <h2 className="text-base font-display font-700">Payment</h2>
+                <p className="text-xs text-muted-foreground">
+                  Subscription billing
+                </p>
+              </div>
+            </div>
+            <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-xs">
+              Coming Soon
+            </Badge>
+          </div>
+          <div className="rounded-xl border border-dashed border-border/70 bg-secondary/30 p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="flex items-center gap-3 flex-1">
+              <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+                <Lock className="w-4 h-4 text-muted-foreground" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">
+                  Razorpay Gateway
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  UPI · Credit/Debit Cards · Net Banking · Wallets
+                </p>
+              </div>
+            </div>
+            {profile && (
+              <div className="text-right">
+                <p className="text-xl font-display font-800 text-foreground">
+                  &#8377;{Number(profile.priceSegment)}
+                </p>
+                <p className="text-xs text-muted-foreground">per month</p>
+              </div>
+            )}
+          </div>
+          <p className="mt-3 text-xs text-muted-foreground">
+            Razorpay integration is being activated. You'll be notified when
+            payments go live.
+          </p>
         </motion.div>
 
         {/* Skip Day Calendar */}
@@ -246,7 +300,7 @@ export function OwnerDashboard() {
               <p className="text-2xl font-display font-800 text-foreground">
                 {remainingSkips}
               </p>
-              <p className="text-xs text-muted-foreground">skips left</p>
+              <p className="text-xs text-muted-foreground">of 7 skips left</p>
             </div>
           </div>
 
@@ -254,7 +308,6 @@ export function OwnerDashboard() {
             <p className="text-sm font-semibold text-center text-muted-foreground mb-3">
               {format(currentMonth, "MMMM yyyy")}
             </p>
-            {/* Day headers */}
             <div className="grid grid-cols-7 mb-1">
               {DAY_HEADERS.map(({ key, label }) => (
                 <div
@@ -265,7 +318,6 @@ export function OwnerDashboard() {
                 </div>
               ))}
             </div>
-            {/* Calendar grid */}
             <div className="grid grid-cols-7 gap-1">
               {emptySlots.map((slot) => (
                 <div key={`empty-${slot}`} />
@@ -276,7 +328,6 @@ export function OwnerDashboard() {
                 const isClickable =
                   (isFuture(day) || isToday(day)) && !isSkipped;
                 const isPast = !isFuture(day) && !isToday(day);
-
                 return (
                   <button
                     type="button"
@@ -375,7 +426,7 @@ export function OwnerDashboard() {
                           {format(parseISO(assignment.date), "EEEE, MMMM d")}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          Service: 5:00 AM – 10:00 AM
+                          Service: 5:00 AM to 10:00 AM
                         </p>
                       </div>
                     </div>
@@ -393,7 +444,7 @@ export function OwnerDashboard() {
 
       <footer className="py-6 border-t border-border mt-8">
         <p className="text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()}. Built with ❤️ using{" "}
+          &copy; {new Date().getFullYear()}. Built with ❤️ using{" "}
           <a
             href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
             target="_blank"

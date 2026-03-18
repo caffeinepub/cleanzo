@@ -1,58 +1,110 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "@tanstack/react-router";
-import { Droplets, Loader2, LogIn, LogOut, Menu, X } from "lucide-react";
+import {
+  Loader2,
+  LogIn,
+  LogOut,
+  Menu,
+  Moon,
+  Sun,
+  Wrench,
+  X,
+} from "lucide-react";
 import { useState } from "react";
+import { useTheme } from "../context/ThemeContext";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 
 interface HeaderProps {
   onJoinOwner?: () => void;
   onJoinCrew?: () => void;
+  onWaitlist?: () => void;
   showNav?: boolean;
 }
 
-export function Header({
-  onJoinOwner,
-  onJoinCrew,
-  showNav = false,
-}: HeaderProps) {
+const navLinks = [
+  { to: "/", label: "Home" },
+  { to: "/about", label: "About Us" },
+  { to: "/why-cleanzo", label: "Why Cleanzo" },
+  { to: "/pricing", label: "Pricing" },
+  { to: "/contact", label: "Contact" },
+];
+
+export function Header({ onJoinOwner, onJoinCrew }: HeaderProps) {
   const { identity, login, clear, isLoggingIn, isInitializing } =
     useInternetIdentity();
+  const { theme, toggleTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const isLoggedIn = !!identity && !identity.getPrincipal().isAnonymous();
 
+  const handleSignUp = () => {
+    if (onJoinOwner) onJoinOwner();
+  };
+
   return (
-    <header className="sticky top-0 z-50 glass border-b border-border/60">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        {/* Logo */}
+    <header className="sticky top-0 z-50 glass border-b border-border/40">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+        {/* Logo + Slogan */}
         <Link
           to="/"
-          className="flex items-center gap-2.5 group"
+          className="flex flex-col items-start shrink-0"
           data-ocid="nav.link"
         >
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
-            <Droplets className="w-4 h-4 text-primary-foreground" />
-          </div>
-          <span className="font-display font-700 text-lg text-foreground tracking-tight">
-            Cleanzo
+          <img
+            src="/assets/uploads/9A7DD908-5829-4627-A957-C41626D3EE30-1.png"
+            alt="Cleanzo"
+            className="h-9 w-auto object-contain"
+          />
+          <span className="text-[10px] font-semibold tracking-widest uppercase text-primary/80 leading-tight -mt-0.5">
+            Daily Shine | Zero Hassle
           </span>
         </Link>
 
-        {/* Desktop Nav */}
-        {showNav && isLoggedIn && (
-          <nav className="hidden md:flex items-center gap-1">
+        {/* Desktop nav */}
+        <nav className="hidden lg:flex items-center gap-1 flex-1 justify-center">
+          {navLinks.map(({ to, label }) => (
             <Link
-              to="/owner"
-              className="px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary rounded-md transition-colors"
+              key={to}
+              to={to}
+              className="px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/60 rounded-lg transition-colors"
               data-ocid="nav.link"
             >
-              My Dashboard
+              {label}
             </Link>
-          </nav>
-        )}
+          ))}
+          {/* Join as Crew in nav */}
+          {onJoinCrew && (
+            <button
+              type="button"
+              onClick={onJoinCrew}
+              className="px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/60 rounded-lg transition-colors flex items-center gap-1.5"
+              data-ocid="nav.link"
+            >
+              <Wrench className="w-3.5 h-3.5" />
+              Join as Crew
+            </button>
+          )}
+        </nav>
 
         {/* Right actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 shrink-0">
+          {/* Theme Toggle */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={
+              theme === "light" ? "Switch to dark mode" : "Switch to light mode"
+            }
+            className="w-9 h-9 flex items-center justify-center rounded-lg bg-secondary hover:bg-secondary/80 border border-border/50 transition-colors"
+            data-ocid="nav.toggle"
+          >
+            {theme === "light" ? (
+              <Moon className="w-4 h-4 text-foreground" />
+            ) : (
+              <Sun className="w-4 h-4 text-foreground" />
+            )}
+          </button>
+
           {isInitializing ? (
             <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
           ) : isLoggedIn ? (
@@ -76,28 +128,17 @@ export function Header({
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              {onJoinOwner && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={onJoinOwner}
-                  className="hidden sm:flex text-sm"
-                  data-ocid="nav.button"
+              <span className="hidden md:flex items-center gap-1 text-sm text-muted-foreground">
+                New here?{" "}
+                <button
+                  type="button"
+                  onClick={handleSignUp}
+                  className="text-accent hover:text-accent/80 font-medium underline-offset-2 hover:underline transition-colors"
+                  data-ocid="nav.link"
                 >
-                  Join as Owner
-                </Button>
-              )}
-              {onJoinCrew && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={onJoinCrew}
-                  className="hidden sm:flex text-sm"
-                  data-ocid="nav.button"
-                >
-                  Join as Crew
-                </Button>
-              )}
+                  Sign up now
+                </button>
+              </span>
               <Button
                 size="sm"
                 onClick={login}
@@ -114,11 +155,11 @@ export function Header({
                   {isLoggingIn ? "Signing in..." : "Sign In"}
                 </span>
               </Button>
-              {/* Mobile menu */}
+              {/* Mobile hamburger */}
               <Button
                 variant="ghost"
                 size="icon"
-                className="sm:hidden"
+                className="lg:hidden"
                 onClick={() => setMobileOpen(!mobileOpen)}
                 data-ocid="nav.toggle"
               >
@@ -134,35 +175,51 @@ export function Header({
       </div>
 
       {/* Mobile menu */}
-      {mobileOpen && !isLoggedIn && (
-        <div className="sm:hidden border-t border-border bg-background/95 backdrop-blur-sm px-4 py-3 flex flex-col gap-2">
-          {onJoinOwner && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                onJoinOwner();
-                setMobileOpen(false);
-              }}
-              className="justify-start"
-              data-ocid="nav.button"
+      {mobileOpen && (
+        <div className="lg:hidden border-t border-border/40 bg-card/95 backdrop-blur-xl px-4 py-4 flex flex-col gap-1">
+          {navLinks.map(({ to, label }) => (
+            <Link
+              key={to}
+              to={to}
+              className="px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/60 rounded-lg transition-colors"
+              onClick={() => setMobileOpen(false)}
+              data-ocid="nav.link"
             >
-              Join as Car Owner
-            </Button>
-          )}
+              {label}
+            </Link>
+          ))}
+          {/* Join as Crew in mobile menu */}
           {onJoinCrew && (
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
+              type="button"
               onClick={() => {
                 onJoinCrew();
                 setMobileOpen(false);
               }}
-              className="justify-start"
-              data-ocid="nav.button"
+              className="px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/60 rounded-lg transition-colors flex items-center gap-1.5 text-left"
+              data-ocid="nav.link"
             >
-              Join as Crew Member
-            </Button>
+              <Wrench className="w-3.5 h-3.5" />
+              Join as Crew
+            </button>
+          )}
+          {!isLoggedIn && (
+            <div className="pt-3 mt-1 border-t border-border/30 flex flex-col gap-2">
+              <p className="text-xs text-muted-foreground px-3">
+                Don't have an account?{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleSignUp();
+                    setMobileOpen(false);
+                  }}
+                  className="text-accent font-medium"
+                  data-ocid="nav.link"
+                >
+                  Sign up now
+                </button>
+              </p>
+            </div>
           )}
         </div>
       )}
