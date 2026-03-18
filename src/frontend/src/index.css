@@ -19,130 +19,73 @@
   font-display: swap;
 }
 
-/* ─── Light Theme (default) ──────────────────────────────── */
-:root,
-[data-theme="light"] {
-  /* Background: clean white */
-  --background: 0.98 0.002 250;
-  --foreground: 0.15 0.01 250;
+/* ─── Clean Sky Blue Theme ────────────────────────────────── */
+:root {
+  /* Background: icy clean blue-white, like crisp morning air */
+  --background: 0.97 0.012 230;
+  --foreground: 0.18 0.03 250;
 
-  /* Card */
-  --card: 1.0 0.0 0;
-  --card-foreground: 0.15 0.01 250;
+  /* Card: pure white with the faintest blue whisper */
+  --card: 0.99 0.006 230;
+  --card-foreground: 0.18 0.03 250;
 
   /* Popover */
-  --popover: 1.0 0.0 0;
-  --popover-foreground: 0.15 0.01 250;
+  --popover: 0.99 0.006 230;
+  --popover-foreground: 0.18 0.03 250;
 
-  /* Primary: Electric blue */
-  --primary: 0.48 0.22 245;
+  /* Primary: confident sky blue – clean, professional, trustworthy */
+  --primary: 0.52 0.18 240;
   --primary-foreground: 0.99 0 0;
 
-  /* Secondary: light gray surface */
-  --secondary: 0.94 0.005 250;
-  --secondary-foreground: 0.25 0.01 250;
+  /* Secondary: soft blue-grey surface */
+  --secondary: 0.93 0.016 230;
+  --secondary-foreground: 0.32 0.04 245;
 
   /* Muted */
-  --muted: 0.94 0.005 250;
-  --muted-foreground: 0.5 0.012 250;
+  --muted: 0.94 0.014 230;
+  --muted-foreground: 0.48 0.025 240;
 
-  /* Accent: Mint/teal */
-  --accent: 0.55 0.16 180;
-  --accent-foreground: 0.99 0 0;
+  /* Accent: fresh teal-green for highlights and success */
+  --accent: 0.94 0.014 185;
+  --accent-foreground: 0.22 0.06 185;
 
   /* Destructive */
   --destructive: 0.55 0.22 25;
   --destructive-foreground: 0.99 0 0;
 
   /* Border / Input / Ring */
-  --border: 0.88 0.008 250;
-  --input: 0.88 0.008 250;
-  --ring: 0.48 0.22 245;
+  --border: 0.88 0.018 230;
+  --input: 0.91 0.016 230;
+  --ring: 0.52 0.18 240;
 
   /* Radius */
   --radius: 0.75rem;
 
   /* Charts */
-  --chart-1: 0.48 0.22 245;
-  --chart-2: 0.55 0.16 180;
-  --chart-3: 0.55 0.18 200;
-  --chart-4: 0.48 0.2 260;
-  --chart-5: 0.45 0.18 220;
+  --chart-1: 0.52 0.18 240;
+  --chart-2: 0.68 0.16 185;
+  --chart-3: 0.62 0.15 255;
+  --chart-4: 0.72 0.12 210;
+  --chart-5: 0.58 0.18 200;
 
   /* Sidebar */
-  --sidebar: 0.96 0.004 250;
-  --sidebar-foreground: 0.15 0.01 250;
-  --sidebar-primary: 0.48 0.22 245;
+  --sidebar: 0.96 0.013 230;
+  --sidebar-foreground: 0.18 0.03 250;
+  --sidebar-primary: 0.52 0.18 240;
   --sidebar-primary-foreground: 0.99 0 0;
-  --sidebar-accent: 0.92 0.005 250;
-  --sidebar-accent-foreground: 0.25 0.01 250;
-  --sidebar-border: 0.88 0.008 250;
-  --sidebar-ring: 0.48 0.22 245;
-}
-
-/* ─── Dark Theme ──────────────────────────────────────────── */
-[data-theme="dark"] {
-  /* Background: near-black with a slight blue tint */
-  --background: 0.1 0.008 250;
-  --foreground: 0.95 0.005 250;
-
-  /* Card: slightly lighter dark */
-  --card: 0.14 0.01 250;
-  --card-foreground: 0.95 0.005 250;
-
-  /* Popover */
-  --popover: 0.12 0.01 250;
-  --popover-foreground: 0.95 0.005 250;
-
-  /* Primary: Electric blue */
-  --primary: 0.58 0.22 245;
-  --primary-foreground: 0.99 0 0;
-
-  /* Secondary: subtle dark surface */
-  --secondary: 0.18 0.012 250;
-  --secondary-foreground: 0.85 0.005 250;
-
-  /* Muted */
-  --muted: 0.2 0.01 250;
-  --muted-foreground: 0.55 0.012 250;
-
-  /* Accent: Mint/teal */
-  --accent: 0.72 0.16 180;
-  --accent-foreground: 0.1 0.008 250;
-
-  /* Destructive */
-  --destructive: 0.55 0.22 25;
-  --destructive-foreground: 0.99 0 0;
-
-  /* Border / Input / Ring */
-  --border: 0.22 0.012 250;
-  --input: 0.22 0.012 250;
-  --ring: 0.58 0.22 245;
-
-  /* Radius */
-  --radius: 0.75rem;
-
-  /* Charts */
-  --chart-1: 0.58 0.22 245;
-  --chart-2: 0.72 0.16 180;
-  --chart-3: 0.65 0.18 200;
-  --chart-4: 0.55 0.2 260;
-  --chart-5: 0.48 0.18 220;
-
-  /* Sidebar */
-  --sidebar: 0.12 0.01 250;
-  --sidebar-foreground: 0.95 0.005 250;
-  --sidebar-primary: 0.58 0.22 245;
-  --sidebar-primary-foreground: 0.99 0 0;
-  --sidebar-accent: 0.18 0.012 250;
-  --sidebar-accent-foreground: 0.85 0.005 250;
-  --sidebar-border: 0.22 0.012 250;
-  --sidebar-ring: 0.58 0.22 245;
+  --sidebar-accent: 0.92 0.016 230;
+  --sidebar-accent-foreground: 0.32 0.04 245;
+  --sidebar-border: 0.88 0.018 230;
+  --sidebar-ring: 0.52 0.18 240;
 }
 
 /* ─── Base Styles ────────────────────────────────────────── */
 * {
   border-color: oklch(var(--border));
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -151,71 +94,133 @@ body {
   font-family: "Plus Jakarta Sans", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Clean airy sky gradient – light, fresh, open */
+  background-image: radial-gradient(
+      ellipse 130% 60% at 50% 0%,
+      oklch(0.88 0.04 230 / 0.45) 0%,
+      transparent 65%
+    ),
+    radial-gradient(
+      ellipse 70% 50% at 85% 90%,
+      oklch(0.82 0.06 200 / 0.22) 0%,
+      transparent 55%
+    );
+  background-attachment: fixed;
 }
 
 /* ─── Utility Classes ─────────────────────────────────────── */
 .glass {
-  background: oklch(var(--card) / 0.85);
+  background: oklch(0.99 0.006 230 / 0.88);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+}
+
+.glass-card {
+  background: oklch(0.99 0.006 230 / 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid oklch(0.78 0.04 230 / 0.5);
 }
 
 .gradient-mesh {
   background: radial-gradient(
       ellipse 80% 50% at 20% 40%,
-      oklch(0.58 0.22 245 / 0.08) 0%,
+      oklch(0.52 0.18 240 / 0.07) 0%,
       transparent 60%
     ),
     radial-gradient(
       ellipse 60% 40% at 80% 60%,
-      oklch(0.72 0.16 180 / 0.06) 0%,
+      oklch(0.68 0.16 185 / 0.06) 0%,
       transparent 55%
     ),
     radial-gradient(
       ellipse 50% 60% at 50% 10%,
-      oklch(0.58 0.22 245 / 0.05) 0%,
+      oklch(0.62 0.15 225 / 0.06) 0%,
       transparent 60%
     );
 }
 
 .glow-blue {
-  box-shadow: 0 0 40px oklch(0.58 0.22 245 / 0.35), 0 0 80px
-    oklch(0.58 0.22 245 / 0.15);
+  box-shadow: 0 0 40px oklch(0.52 0.18 240 / 0.25), 0 0 80px
+    oklch(0.52 0.18 240 / 0.1);
+}
+
+.glow-gold {
+  box-shadow: 0 0 30px oklch(0.68 0.16 185 / 0.3), 0 0 60px
+    oklch(0.68 0.16 185 / 0.12);
 }
 
 .glow-teal {
-  box-shadow: 0 0 40px oklch(0.72 0.16 180 / 0.35), 0 0 80px
-    oklch(0.72 0.16 180 / 0.15);
+  box-shadow: 0 0 40px oklch(0.68 0.16 185 / 0.3), 0 0 80px
+    oklch(0.68 0.16 185 / 0.12);
 }
 
 .text-gradient-blue {
+  background: linear-gradient(135deg, oklch(0.42 0.2 245), oklch(0.58 0.18 210));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-gold {
   background: linear-gradient(
     135deg,
-    oklch(0.48 0.22 245),
-    oklch(0.55 0.16 180)
+    oklch(0.52 0.18 240),
+    oklch(0.68 0.16 185)
   );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-[data-theme="dark"] .text-gradient-blue {
+/* Pricing card gradient border – clean blue instead of gold/navy */
+.luxury-card-wrapper {
+  position: relative;
+  border-radius: 1.25rem;
+  padding: 1px;
   background: linear-gradient(
     135deg,
-    oklch(0.58 0.22 245),
-    oklch(0.72 0.16 180)
+    oklch(0.68 0.16 210 / 0.5),
+    oklch(0.52 0.18 240 / 0.3),
+    oklch(0.78 0.1 185 / 0.4)
   );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
-/* Subtle scan-lines noise texture */
+.luxury-card-wrapper-featured {
+  position: relative;
+  border-radius: 1.25rem;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    oklch(0.52 0.18 240 / 0.9),
+    oklch(0.68 0.16 185 / 0.6),
+    oklch(0.52 0.18 240 / 0.9)
+  );
+  box-shadow: 0 0 40px oklch(0.52 0.18 240 / 0.2), 0 0 80px
+    oklch(0.68 0.16 185 / 0.12);
+}
+
+/* Subtle noise texture */
 .noise-bg::after {
   content: "";
   position: absolute;
   inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
   pointer-events: none;
-  opacity: 0.5;
+  opacity: 0.3;
+}
+
+/* WhatsApp pulse animation */
+@keyframes whatsapp-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 oklch(0.65 0.25 150 / 0.6);
+  }
+  50% {
+    box-shadow: 0 0 0 12px oklch(0.65 0.25 150 / 0);
+  }
+}
+
+.whatsapp-pulse {
+  animation: whatsapp-pulse 2s ease-in-out infinite;
 }

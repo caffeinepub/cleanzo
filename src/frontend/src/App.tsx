@@ -6,10 +6,12 @@ import {
   createRoute,
   createRouter,
   useNavigate,
+  useRouterState,
 } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { UserRole } from "./backend";
+import { WhatsAppChat } from "./components/WhatsAppChat";
 import { useInternetIdentity } from "./hooks/useInternetIdentity";
 import {
   useCarOwnerProfile,
@@ -28,6 +30,15 @@ import { RefundPolicyPage } from "./pages/RefundPolicyPage";
 import { TermsPage } from "./pages/TermsPage";
 import { WhyCleanzoPage } from "./pages/WhyCleanzoPage";
 
+function ScrollToTop() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  // biome-ignore lint/correctness/useExhaustiveDependencies: pathname triggers scroll
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [pathname]);
+  return null;
+}
+
 function RootLayout() {
   const { identity, isInitializing } = useInternetIdentity();
   const isLoggedIn = !!identity && !identity.getPrincipal().isAnonymous();
@@ -44,6 +55,7 @@ function RootLayout() {
     isInitializing ||
     (isLoggedIn && (roleLoading || ownerLoading || crewLoading));
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: pathname triggers scroll
   useEffect(() => {
     if (!isLoggedIn || roleLoading) return;
     if (role === UserRole.admin) {
@@ -84,7 +96,9 @@ function RootLayout() {
 
   return (
     <>
+      <ScrollToTop />
       <Outlet />
+      <WhatsAppChat />
       <Toaster richColors position="top-right" />
     </>
   );

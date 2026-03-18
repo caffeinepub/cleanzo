@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useNavigate } from "@tanstack/react-router";
-import { Globe, Mail, Send, ShieldCheck } from "lucide-react";
+import { Mail, Send, ShieldCheck } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { SiFacebook, SiInstagram } from "react-icons/si";
@@ -223,9 +223,7 @@ export function ContactPage() {
                       <p className="text-sm font-semibold text-foreground">
                         Instagram
                       </p>
-                      <p className="text-xs text-muted-foreground">
-                        @trycleanzo.in
-                      </p>
+                      <p className="text-xs text-muted-foreground">@cleanzo</p>
                     </div>
                   </a>
                   <a
@@ -247,25 +245,6 @@ export function ContactPage() {
                       </p>
                     </div>
                   </a>
-                  <a
-                    href="https://trycleanzo.in"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border/50 hover:border-primary/30 transition-all group"
-                    data-ocid="contact.link"
-                  >
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                      <Globe className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-foreground">
-                        Website
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        trycleanzo.in
-                      </p>
-                    </div>
-                  </a>
                 </div>
               </div>
               <div className="p-6 rounded-xl bg-card border border-border/50">
@@ -273,7 +252,7 @@ export function ContactPage() {
                   Service hours
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Daily — 5:00 AM to 10:00 AM
+                  Daily, 5:00 AM to 10:00 AM
                 </p>
                 <p className="text-xs text-primary font-medium mt-3 tracking-widest uppercase">
                   Daily Shine | Zero Hassle
@@ -322,11 +301,11 @@ export function ContactPage() {
                         Email
                       </p>
                       <a
-                        href="mailto:grievance@trycleanzo.in"
+                        href="mailto:grievance@cleanzo"
                         className="text-sm font-medium text-primary hover:underline flex items-center gap-1"
                       >
                         <Mail className="w-3.5 h-3.5" />
-                        grievance@trycleanzo.in
+                        grievance@cleanzo
                       </a>
                     </div>
                     <div className="p-4 rounded-xl bg-secondary/40 sm:col-span-2">

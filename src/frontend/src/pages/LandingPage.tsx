@@ -11,6 +11,7 @@ import {
   MapPin,
   Shield,
   Sparkles,
+  Star,
   Wrench,
 } from "lucide-react";
 import { motion } from "motion/react";
@@ -59,7 +60,7 @@ const FEATURES = [
 ];
 
 const PLAN_FEATURES = [
-  "Daily dry clean 5am–10am",
+  "Daily dry clean 5am to 10am",
   "Up to 7 skip days/month",
   "Real-time schedule tracking",
 ];
@@ -132,7 +133,7 @@ export function LandingPage() {
       />
 
       {/* ── Hero ─────────────────────────────────────── */}
-      <section className="relative min-h-[92vh] flex items-center overflow-hidden noise-bg">
+      <section className="relative min-h-[95vh] flex items-center overflow-hidden noise-bg">
         {/* 3D Canvas background */}
         <div className="absolute inset-0 z-0">
           <Suspense fallback={null}>
@@ -141,31 +142,29 @@ export function LandingPage() {
         </div>
         {/* gradient overlay so text is legible */}
         <div className="absolute inset-0 z-[1] gradient-mesh" />
-        <div className="absolute inset-0 z-[2] bg-gradient-to-r from-background/90 via-background/60 to-transparent" />
+        <div className="absolute inset-0 z-[2] bg-gradient-to-r from-background/95 via-background/70 to-transparent" />
 
-        {/* Hero image — right side */}
-        <div className="absolute right-0 top-0 bottom-0 z-[2] w-1/2 hidden lg:block">
-          <div className="absolute inset-0 bg-gradient-to-l from-transparent via-background/20 to-background/80 z-10" />
-          <img
-            src="/assets/generated/hero-crew-seltos.dim_1200x800.jpg"
-            alt="Cleanzo crew member with Kia Seltos"
-            className="w-full h-full object-cover object-center"
-          />
-        </div>
-
-        <div className="relative z-[3] max-w-7xl mx-auto px-4 sm:px-6 py-24">
+        <div className="relative z-[3] max-w-[1400px] mx-auto px-6 sm:px-10 lg:px-16 py-32">
           <motion.div
-            className="max-w-xl space-y-6"
+            className="max-w-2xl space-y-8"
             initial="hidden"
             animate="visible"
             variants={stagger}
           >
             <motion.div variants={fadeUp}>
-              <Badge className="bg-primary/15 text-primary border-primary/25 hover:bg-primary/15 mb-4 font-medium gap-1.5">
-                <Clock className="w-3 h-3" />
-                5:00 AM – 10:00 AM · Daily Service
-              </Badge>
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-display font-800 leading-[1.05] tracking-tight">
+              {/* Trial offer + Service hours INLINE */}
+              <div className="flex flex-wrap items-center gap-3 mb-5">
+                <span className="inline-flex items-center gap-1.5 bg-amber-400/15 text-amber-300 border border-amber-400/30 text-sm font-bold px-4 py-2 rounded-full">
+                  <Star className="w-3.5 h-3.5 fill-current" />
+                  Book your 2 days trial at ₹19
+                </span>
+                <span className="hidden sm:block w-px h-5 bg-border/60" />
+                <Badge className="bg-primary/15 text-primary border-primary/25 hover:bg-primary/15 font-medium gap-1.5 text-sm px-3 py-1.5">
+                  <Clock className="w-3.5 h-3.5" />
+                  5:00 AM – 10:00 AM · Daily Service
+                </Badge>
+              </div>
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-display font-800 leading-[1.02] tracking-tight">
                 Your car, <span className="text-gradient-blue">spotless</span>
                 <br />
                 every morning.
@@ -174,22 +173,22 @@ export function LandingPage() {
 
             <motion.p
               variants={fadeUp}
-              className="text-lg text-muted-foreground leading-relaxed"
+              className="text-xl text-muted-foreground leading-relaxed max-w-lg"
             >
               Cleanzo brings professional dry cleaning to your doorstep at dawn.
               Subscribe once, wake up to a gleaming car every single day.
             </motion.p>
 
-            <motion.div variants={fadeUp} className="flex flex-wrap gap-3">
+            <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
               <Button
                 size="lg"
                 onClick={handleJoinOwner}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 glow-blue"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 glow-blue text-base px-8 py-6 h-auto"
                 data-ocid="landing.primary_button"
               >
-                <Car className="w-4 h-4 mr-2" />
+                <Car className="w-5 h-5 mr-2" />
                 Get Started
-                <ArrowRight className="w-4 h-4 ml-2" />
+                <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </motion.div>
 
@@ -201,7 +200,7 @@ export function LandingPage() {
               <button
                 type="button"
                 onClick={handleJoinOwner}
-                className="text-accent font-semibold hover:underline"
+                className="text-amber-300 font-semibold hover:underline"
                 data-ocid="landing.link"
               >
                 Sign up now →
@@ -210,18 +209,18 @@ export function LandingPage() {
 
             <motion.div
               variants={fadeUp}
-              className="flex flex-wrap items-center gap-5 pt-2"
+              className="flex flex-wrap items-center gap-6 pt-2"
             >
               {[
                 { icon: Sparkles, text: "Waterless tech" },
                 { icon: Shield, text: "No water spots" },
-                { icon: Clock, text: "5am–10am daily" },
+                { icon: Clock, text: "5am – 10am daily" },
               ].map(({ icon: Icon, text }) => (
                 <div
                   key={text}
-                  className="flex items-center gap-1.5 text-sm text-muted-foreground"
+                  className="flex items-center gap-2 text-sm text-muted-foreground"
                 >
-                  <Icon className="w-3.5 h-3.5 text-primary" />
+                  <Icon className="w-4 h-4 text-primary" />
                   <span>{text}</span>
                 </div>
               ))}
@@ -231,45 +230,44 @@ export function LandingPage() {
       </section>
 
       {/* ── Waitlist / Noida Launch ──────────────────── */}
-      <section className="py-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/8" />
+      <section className="py-28 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-amber-400/5" />
         <div className="absolute inset-0 noise-bg opacity-30" />
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6">
+        <div className="relative max-w-[1400px] mx-auto px-6 sm:px-10 lg:px-16">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={stagger}
-            className="flex flex-col lg:flex-row items-center gap-10"
+            className="flex flex-col lg:flex-row items-center gap-14"
           >
             <motion.div
               variants={fadeUp}
               className="flex-1 text-center lg:text-left"
             >
-              <div className="flex items-center justify-center lg:justify-start gap-2 mb-4">
+              <div className="flex items-center justify-center lg:justify-start gap-2 mb-5">
                 <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase bg-primary/15 text-primary border border-primary/25 px-3 py-1.5 rounded-full">
                   <MapPin className="w-3 h-3" />
                   Coming Soon to Noida
                 </span>
               </div>
-              <h2 className="text-3xl sm:text-4xl font-display font-800 mb-4 leading-tight">
+              <h2 className="text-4xl sm:text-5xl font-display font-800 mb-5 leading-tight">
                 Cleanzo is launching in{" "}
                 <span className="text-gradient-blue">Noida</span>! 🎉
               </h2>
-              <p className="text-muted-foreground text-base leading-relaxed mb-6">
+              <p className="text-muted-foreground text-lg leading-relaxed mb-7">
                 We're bringing our premium car exterior dry cleaning service to
                 Noida residents. Be among the first to experience Cleanzo in
-                your society — sign up for early access and get notified the
-                moment we go live in your area.
+                your society.
               </p>
-              <ul className="space-y-2 text-sm text-muted-foreground mb-6 text-left">
+              <ul className="space-y-3 text-sm text-muted-foreground mb-6 text-left">
                 {[
                   "Early bird pricing locked for waitlist members",
                   "Priority slot booking when we launch",
                   "Exclusive first-week offer",
                 ].map((item) => (
                   <li key={item} className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />
                     {item}
                   </li>
                 ))}
@@ -280,25 +278,32 @@ export function LandingPage() {
               variants={fadeUp}
               className="flex-shrink-0 w-full lg:w-auto flex flex-col items-center gap-4"
             >
-              <div className="w-full lg:w-80 p-8 rounded-2xl bg-card border border-primary/20 shadow-card text-center">
-                <div className="w-14 h-14 rounded-full bg-primary/15 flex items-center justify-center mx-auto mb-4">
-                  <Bell className="w-7 h-7 text-primary" />
+              <div className="luxury-card-wrapper-featured">
+                <div className="w-full lg:w-96 p-10 rounded-[1.2rem] bg-card text-center">
+                  <div className="w-16 h-16 rounded-full bg-amber-400/15 flex items-center justify-center mx-auto mb-5">
+                    <Bell className="w-8 h-8 text-amber-400" />
+                  </div>
+                  <h3 className="font-display font-700 text-2xl mb-2">
+                    Get Early Access
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-7">
+                    Join 100+ Noida residents already on the waitlist.
+                  </p>
+                  <Button
+                    size="lg"
+                    className="w-full text-base py-6 h-auto"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, oklch(0.78 0.15 75), oklch(0.65 0.18 60))",
+                      color: "oklch(0.12 0.01 255)",
+                    }}
+                    onClick={() => setWaitlistOpen(true)}
+                    data-ocid="waitlist.primary_button"
+                  >
+                    <MapPin className="w-4 h-4 mr-2" />
+                    Join the Waitlist
+                  </Button>
                 </div>
-                <h3 className="font-display font-700 text-xl mb-2">
-                  Get Early Access
-                </h3>
-                <p className="text-sm text-muted-foreground mb-6">
-                  Join 100+ Noida residents already on the waitlist.
-                </p>
-                <Button
-                  size="lg"
-                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 glow-blue"
-                  onClick={() => setWaitlistOpen(true)}
-                  data-ocid="waitlist.primary_button"
-                >
-                  <MapPin className="w-4 h-4 mr-2" />
-                  Join the Waitlist
-                </Button>
               </div>
             </motion.div>
           </motion.div>
@@ -306,22 +311,25 @@ export function LandingPage() {
       </section>
 
       {/* ── Features ────────────────────────────────── */}
-      <section className="py-24 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <section className="py-32 relative">
+        <div className="max-w-[1400px] mx-auto px-6 sm:px-10 lg:px-16">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={stagger}
-            className="text-center mb-14"
+            className="text-center mb-16"
           >
             <motion.h2
               variants={fadeUp}
-              className="text-4xl font-display font-700 mb-3"
+              className="text-4xl sm:text-5xl font-display font-700 mb-4"
             >
-              Why thousands love Cleanzo
+              Why choose Cleanzo?
             </motion.h2>
-            <motion.p variants={fadeUp} className="text-muted-foreground">
+            <motion.p
+              variants={fadeUp}
+              className="text-muted-foreground text-lg"
+            >
               The smarter way to keep your car clean.
             </motion.p>
           </motion.div>
@@ -330,23 +338,21 @@ export function LandingPage() {
             whileInView="visible"
             viewport={{ once: true }}
             variants={stagger}
-            className="grid md:grid-cols-3 gap-6"
+            className="grid md:grid-cols-3 gap-8"
           >
             {FEATURES.map(({ icon: Icon, title, desc }) => (
               <motion.div
                 key={title}
                 variants={fadeUp}
-                className="p-7 rounded-2xl bg-card border border-border/60 hover:border-primary/40 transition-all hover:-translate-y-1 group"
+                className="p-9 rounded-2xl bg-card border border-border/60 hover:border-primary/40 transition-all hover:-translate-y-1.5 group"
               >
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-5 group-hover:bg-primary/20 transition-colors">
-                  <Icon className="w-6 h-6 text-primary" />
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
+                  <Icon className="w-7 h-7 text-primary" />
                 </div>
-                <h3 className="font-display font-700 text-foreground mb-2 text-lg">
+                <h3 className="font-display font-700 text-foreground mb-3 text-xl">
                   {title}
                 </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {desc}
-                </p>
+                <p className="text-muted-foreground leading-relaxed">{desc}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -354,22 +360,26 @@ export function LandingPage() {
       </section>
 
       {/* ── Pricing preview ─────────────────────────── */}
-      <section className="py-24 bg-secondary/20" id="pricing">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <section className="py-32 relative overflow-hidden" id="pricing">
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-400/5 via-background to-primary/5" />
+        <div className="max-w-[1400px] mx-auto px-6 sm:px-10 lg:px-16 relative">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={stagger}
-            className="text-center mb-14"
+            className="text-center mb-16"
           >
             <motion.h2
               variants={fadeUp}
-              className="text-4xl font-display font-700 mb-3"
+              className="text-4xl sm:text-5xl font-display font-700 mb-4"
             >
               Simple, transparent pricing
             </motion.h2>
-            <motion.p variants={fadeUp} className="text-muted-foreground">
+            <motion.p
+              variants={fadeUp}
+              className="text-muted-foreground text-lg"
+            >
               One subscription. All mornings covered.
             </motion.p>
           </motion.div>
@@ -379,86 +389,104 @@ export function LandingPage() {
             whileInView="visible"
             viewport={{ once: true }}
             variants={stagger}
-            className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto"
+            className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto"
           >
             {/* Standard Plan */}
-            <motion.div
-              variants={fadeUp}
-              className="bg-card rounded-2xl p-8 border border-border/60 hover:border-primary/40 transition-all"
-            >
-              <div className="mb-6">
-                <h3 className="text-xl font-display font-700 mb-1">
-                  Standard Plan
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  For everyday cars
-                </p>
+            <motion.div variants={fadeUp}>
+              <div className="luxury-card-wrapper">
+                <div className="bg-card rounded-[1.2rem] p-10 h-full">
+                  <div className="mb-7">
+                    <h3 className="text-2xl font-display font-700 mb-1">
+                      Standard Plan
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Hatchback, Sedan, Mid-SUV
+                    </p>
+                  </div>
+                  <div className="mb-7 flex items-end gap-1">
+                    <span className="text-6xl font-display font-800 text-gradient-gold">
+                      ₹399
+                    </span>
+                    <span className="text-muted-foreground mb-2">/month</span>
+                  </div>
+                  <ul className="space-y-3 mb-9">
+                    {["Hatchback, Sedan, Mid-SUV", ...PLAN_FEATURES].map(
+                      (f) => (
+                        <li
+                          key={f}
+                          className="flex items-center gap-2.5 text-sm"
+                        >
+                          <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />
+                          {f}
+                        </li>
+                      ),
+                    )}
+                  </ul>
+                  <Button
+                    className="w-full py-6 h-auto text-base bg-primary text-primary-foreground hover:bg-primary/90"
+                    onClick={handleJoinOwner}
+                    data-ocid="pricing.primary_button"
+                  >
+                    Get Started
+                  </Button>
+                </div>
               </div>
-              <div className="mb-6">
-                <span className="text-5xl font-display font-800">₹399</span>
-                <span className="text-muted-foreground ml-1">/month</span>
-              </div>
-              <ul className="space-y-2.5 mb-8">
-                {["Hatchback, Sedan, Mid-SUV", ...PLAN_FEATURES].map((f) => (
-                  <li key={f} className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <Button
-                className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-                onClick={handleJoinOwner}
-                data-ocid="pricing.primary_button"
-              >
-                Get Started
-              </Button>
             </motion.div>
 
             {/* SUV Plan */}
-            <motion.div
-              variants={fadeUp}
-              className="relative rounded-2xl p-8 overflow-hidden border border-accent/30 bg-gradient-to-br from-card via-card to-accent/5"
-            >
-              <div className="absolute top-4 right-4">
-                <Badge className="bg-accent/15 text-accent border-accent/25 text-xs">
-                  SUV
-                </Badge>
+            <motion.div variants={fadeUp}>
+              <div className="luxury-card-wrapper-featured">
+                <div className="bg-card rounded-[1.2rem] p-10 h-full relative overflow-hidden">
+                  <div className="absolute top-5 right-5">
+                    <span className="inline-flex items-center text-xs font-bold px-3 py-1.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                      Most Popular
+                    </span>
+                  </div>
+                  <div className="mb-7">
+                    <h3 className="text-2xl font-display font-700 mb-1">
+                      SUV Plan
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      For large SUVs and 7-seaters
+                    </p>
+                  </div>
+                  <div className="mb-7 flex items-end gap-1">
+                    <span className="text-6xl font-display font-800 text-gradient-gold">
+                      ₹449
+                    </span>
+                    <span className="text-muted-foreground mb-2">/month</span>
+                  </div>
+                  <ul className="space-y-3 mb-9">
+                    {["Large SUV and 7-seaters", ...PLAN_FEATURES].map((f) => (
+                      <li key={f} className="flex items-center gap-2.5 text-sm">
+                        <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                  <Button
+                    className="w-full py-6 h-auto text-base"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, oklch(0.78 0.15 75), oklch(0.65 0.18 60))",
+                      color: "oklch(0.12 0.01 255)",
+                    }}
+                    onClick={handleJoinOwner}
+                    data-ocid="pricing.secondary_button"
+                  >
+                    Get Started
+                  </Button>
+                </div>
               </div>
-              <div className="mb-6">
-                <h3 className="text-xl font-display font-700 mb-1">SUV Plan</h3>
-                <p className="text-sm text-muted-foreground">
-                  For large SUVs & 7-seaters
-                </p>
-              </div>
-              <div className="mb-6">
-                <span className="text-5xl font-display font-800">₹449</span>
-                <span className="text-muted-foreground ml-1">/month</span>
-              </div>
-              <ul className="space-y-2.5 mb-8">
-                {["Large SUV & 7-seaters", ...PLAN_FEATURES].map((f) => (
-                  <li key={f} className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="w-4 h-4 text-accent shrink-0" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <Button
-                className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
-                onClick={handleJoinOwner}
-                data-ocid="pricing.secondary_button"
-              >
-                Get Started
-              </Button>
             </motion.div>
           </motion.div>
         </div>
       </section>
 
       {/* ── CTA ─────────────────────────────────────── */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-accent/10" />
-        <div className="relative max-w-3xl mx-auto px-4 sm:px-6 text-center">
+      <section className="py-32 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-background to-amber-400/8" />
+        <div className="relative max-w-4xl mx-auto px-6 sm:px-10 text-center">
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -467,25 +495,25 @@ export function LandingPage() {
           >
             <motion.h2
               variants={fadeUp}
-              className="text-4xl font-display font-800 mb-4"
+              className="text-4xl sm:text-5xl font-display font-800 mb-5"
             >
               Ready for a spotless morning?
             </motion.h2>
             <motion.p
               variants={fadeUp}
-              className="text-muted-foreground mb-3 text-lg"
+              className="text-muted-foreground mb-3 text-xl"
             >
               Subscribe today and wake up to a freshly cleaned car every day.
             </motion.p>
             <motion.p
               variants={fadeUp}
-              className="text-sm text-muted-foreground mb-8"
+              className="text-sm text-muted-foreground mb-10"
             >
               Don't have an account?{" "}
               <button
                 type="button"
                 onClick={handleJoinOwner}
-                className="text-accent font-semibold hover:underline"
+                className="text-amber-300 font-semibold hover:underline"
                 data-ocid="cta.link"
               >
                 Sign up now →
@@ -498,20 +526,20 @@ export function LandingPage() {
               <Button
                 size="lg"
                 onClick={handleJoinOwner}
-                className="bg-primary text-primary-foreground hover:bg-primary/90"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 h-auto text-base"
                 data-ocid="cta.primary_button"
               >
-                <Car className="w-4 h-4 mr-2" />
+                <Car className="w-5 h-5 mr-2" />
                 Join as Car Owner
               </Button>
               <Button
                 size="lg"
                 variant="outline"
                 onClick={handleJoinCrew}
-                className="border-border/60 hover:bg-secondary/60"
+                className="border-border/60 hover:bg-secondary/60 px-8 py-6 h-auto text-base"
                 data-ocid="cta.secondary_button"
               >
-                <Wrench className="w-4 h-4 mr-2" />
+                <Wrench className="w-5 h-5 mr-2" />
                 Join the Crew
               </Button>
             </motion.div>

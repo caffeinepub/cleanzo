@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { Globe } from "lucide-react";
 import { SiFacebook, SiInstagram } from "react-icons/si";
 
 export function Footer() {
@@ -11,7 +10,7 @@ export function Footer() {
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-3">
               <img
-                src="/assets/uploads/9A7DD908-5829-4627-A957-C41626D3EE30-1.png"
+                src="/assets/uploads/Logo-1.png"
                 alt="Cleanzo"
                 className="h-8 w-auto object-contain"
               />
@@ -105,18 +104,6 @@ export function Footer() {
                   Facebook
                 </a>
               </li>
-              <li>
-                <a
-                  href="https://trycleanzo.in"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  data-ocid="footer.link"
-                >
-                  <Globe className="w-3.5 h-3.5" />
-                  trycleanzo.in
-                </a>
-              </li>
             </ul>
           </div>
         </div>
@@ -124,17 +111,6 @@ export function Footer() {
         <div className="pt-6 border-t border-border/30 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} Cleanzo. All rights reserved.
-          </p>
-          <p className="text-xs text-muted-foreground">
-            Built with ❤️ using{" "}
-            <a
-              href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline hover:text-foreground transition-colors"
-            >
-              caffeine.ai
-            </a>
           </p>
         </div>
       </div>

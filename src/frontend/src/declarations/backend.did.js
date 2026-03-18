@@ -60,6 +60,15 @@ export const PaymentRecord = IDL.Record({
   'sessionId' : IDL.Text,
   'amount' : IDL.Nat,
 });
+export const WaitlistEntry = IDL.Record({
+  'name' : IDL.Text,
+  'email' : IDL.Text,
+  'phone' : IDL.Text,
+  'carModel' : IDL.Text,
+  'sectorSociety' : IDL.Text,
+  'carsInFamily' : IDL.Nat,
+  'submittedAt' : IDL.Int,
+});
 export const StripeSessionStatus = IDL.Variant({
   'completed' : IDL.Record({
     'userPrincipal' : IDL.Opt(IDL.Text),
@@ -115,7 +124,7 @@ export const idlService = IDL.Service({
     ),
   'getActiveCrewMembers' : IDL.Func(
       [],
-      [IDL.Vec(IDL.Tuple(IDL.Principal, CrewMemberProfile)), IDL.Nat],
+      [IDL.Vec(IDL.Tuple(IDL.Principal, CarOwnerProfile)), IDL.Nat],
       ['query'],
     ),
   'getAllCarOwners' : IDL.Func([], [IDL.Vec(CarOwnerProfile)], ['query']),
@@ -149,6 +158,8 @@ export const idlService = IDL.Service({
     ),
   'getSkipDays' : IDL.Func([IDL.Principal], [IDL.Vec(IDL.Text)], ['query']),
   'getStripeSessionStatus' : IDL.Func([IDL.Text], [StripeSessionStatus], []),
+  'getWaitlistCount' : IDL.Func([], [IDL.Nat], ['query']),
+  'getWaitlistEntries' : IDL.Func([], [IDL.Vec(WaitlistEntry)], ['query']),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'isStripeConfigured' : IDL.Func([], [IDL.Bool], ['query']),
   'markAssignmentDone' : IDL.Func([IDL.Principal, IDL.Text], [], []),
@@ -165,6 +176,7 @@ export const idlService = IDL.Service({
   'registerCrewMember' : IDL.Func([IDL.Text, IDL.Text], [], []),
   'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
   'skipDay' : IDL.Func([IDL.Text], [], []),
+  'submitWaitlist' : IDL.Func([IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Nat], [], []),
   'transform' : IDL.Func(
       [TransformationInput],
       [TransformationOutput],
@@ -233,6 +245,15 @@ export const idlFactory = ({ IDL }) => {
     'timestamp' : IDL.Int,
     'sessionId' : IDL.Text,
     'amount' : IDL.Nat,
+  });
+  const WaitlistEntry = IDL.Record({
+    'name' : IDL.Text,
+    'email' : IDL.Text,
+    'phone' : IDL.Text,
+    'carModel' : IDL.Text,
+    'sectorSociety' : IDL.Text,
+    'carsInFamily' : IDL.Nat,
+    'submittedAt' : IDL.Int,
   });
   const StripeSessionStatus = IDL.Variant({
     'completed' : IDL.Record({
@@ -320,6 +341,8 @@ export const idlFactory = ({ IDL }) => {
       ),
     'getSkipDays' : IDL.Func([IDL.Principal], [IDL.Vec(IDL.Text)], ['query']),
     'getStripeSessionStatus' : IDL.Func([IDL.Text], [StripeSessionStatus], []),
+    'getWaitlistCount' : IDL.Func([], [IDL.Nat], ['query']),
+    'getWaitlistEntries' : IDL.Func([], [IDL.Vec(WaitlistEntry)], ['query']),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'isStripeConfigured' : IDL.Func([], [IDL.Bool], ['query']),
     'markAssignmentDone' : IDL.Func([IDL.Principal, IDL.Text], [], []),
@@ -336,6 +359,7 @@ export const idlFactory = ({ IDL }) => {
     'registerCrewMember' : IDL.Func([IDL.Text, IDL.Text], [], []),
     'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
     'skipDay' : IDL.Func([IDL.Text], [], []),
+    'submitWaitlist' : IDL.Func([IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Nat], [], []),
     'transform' : IDL.Func(
         [TransformationInput],
         [TransformationOutput],

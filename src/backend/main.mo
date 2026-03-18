@@ -67,12 +67,23 @@ actor {
     sessionId : Text;
   };
 
+  public type WaitlistEntry = {
+    name : Text;
+    email : Text;
+    phone : Text;
+    carModel : Text;
+    sectorSociety : Text;
+    carsInFamily : Nat;
+    submittedAt : Int;
+  };
+
   let carOwners = Map.empty<Principal, CarOwnerProfile>();
   let crewMembers = Map.empty<Principal, CrewMemberProfile>();
   let assignments = List.empty<Assignment>();
   let skipDays = Map.empty<Principal, List.List<Text>>();
   let payments = Map.empty<Principal, List.List<PaymentRecord>>();
   let checkoutSessions = Map.empty<Text, Principal>();
+  let waitlistEntries = List.empty<WaitlistEntry>();
 
   module Assignment {
     public func compare(a : Assignment, b : Assignment) : Order.Order {
@@ -396,6 +407,31 @@ actor {
     skipDays.clear();
   };
 
+  // Waitlist
+  public shared func submitWaitlist(name : Text, email : Text, phone : Text, carModel : Text, sectorSociety : Text, carsInFamily : Nat) : async () {
+    let entry : WaitlistEntry = {
+      name;
+      email;
+      phone;
+      carModel;
+      sectorSociety;
+      carsInFamily;
+      submittedAt = Time.now();
+    };
+    waitlistEntries.add(entry);
+  };
+
+  public query ({ caller }) func getWaitlistEntries() : async [WaitlistEntry] {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can access waitlist entries");
+    };
+    waitlistEntries.toArray();
+  };
+
+  public query func getWaitlistCount() : async Nat {
+    waitlistEntries.size();
+  };
+
   // Stripe Payment Integration
   var stripeConfig : ?Stripe.StripeConfiguration = null;
 
@@ -480,4 +516,3 @@ actor {
     };
   };
 };
-

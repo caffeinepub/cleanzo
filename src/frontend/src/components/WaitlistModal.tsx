@@ -330,7 +330,7 @@ export function WaitlistModal({ open, onOpenChange }: WaitlistModalProps) {
               <div className="flex items-center gap-2 mb-1">
                 <MapPin className="w-5 h-5 text-primary" />
                 <DialogTitle className="text-xl font-display font-700">
-                  Join the Waitlist — Noida
+                  Join the Waitlist for Noida
                 </DialogTitle>
               </div>
               <DialogDescription>

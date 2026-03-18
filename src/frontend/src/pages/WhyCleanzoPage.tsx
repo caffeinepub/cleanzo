@@ -47,7 +47,7 @@ const COMPARISON = [
   },
   {
     feature: "Booking needed",
-    cleanzo: "No — subscription auto-enrolls",
+    cleanzo: "No, subscription auto-enrolls",
     traditional: "Yes, every time",
   },
   {
@@ -75,13 +75,13 @@ const BENEFITS = [
   },
   {
     icon: Clock,
-    title: "Morning slot — car ready when you leave",
+    title: "Morning slot, car ready when you leave",
     desc: "Our crew works between 5am and 10am, so your car is freshly cleaned and waiting the moment you step out the door.",
   },
   {
     icon: CreditCard,
     title: "No booking, ever again",
-    desc: "Subscribe once and we take care of the rest. Your subscription auto-enrolls you for daily service — no apps, no reminders.",
+    desc: "Subscribe once and we take care of the rest. Your subscription auto-enrolls you for daily service. No apps, no reminders.",
   },
   {
     icon: Calendar,
@@ -172,7 +172,7 @@ export function WhyCleanzoPage() {
               variants={fadeUp}
               className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto"
             >
-              Dry cleaning isn't just better — it's the future of car care.
+              Dry cleaning isn't just better. It's the future of car care.
               Here's why Cleanzo leaves traditional car washes in the dust.
             </motion.p>
           </motion.div>
@@ -295,8 +295,8 @@ export function WhyCleanzoPage() {
               <p className="text-muted-foreground leading-relaxed mb-4 max-w-2xl mx-auto">
                 Waterless car cleaning uses specially formulated sprays that
                 lift and encapsulate dirt particles, which are then safely wiped
-                away with microfibre cloths. No water is needed — and the
-                results are phenomenal.
+                away with microfibre cloths. No water is needed, and the results
+                are phenomenal.
               </p>
               <p className="text-muted-foreground leading-relaxed max-w-2xl mx-auto">
                 This technique is widely used by luxury car detailers worldwide.

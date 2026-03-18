@@ -32,7 +32,7 @@ const VALUES = [
   {
     icon: Heart,
     title: "Care",
-    desc: "We treat your car with the same care we'd give our own — every detail matters.",
+    desc: "We treat your car with the same care we'd give our own. Every detail matters.",
   },
   {
     icon: Users,
@@ -150,7 +150,7 @@ export function AboutPage() {
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-4">
                 Every morning between 5am and 10am, our trained crew arrives at
-                your location and delivers a thorough, waterless dry clean —
+                your location and delivers a thorough, waterless dry clean.
                 leaving your car spotless before your day even begins.
               </p>
               <p className="text-muted-foreground leading-relaxed">
@@ -164,7 +164,7 @@ export function AboutPage() {
               className="rounded-3xl bg-card border border-border/50 p-10 text-center"
             >
               <img
-                src="/assets/uploads/9A7DD908-5829-4627-A957-C41626D3EE30-1.png"
+                src="/assets/uploads/Logo-1.png"
                 alt="Cleanzo logo"
                 className="h-20 w-auto mx-auto mb-5 object-contain"
               />

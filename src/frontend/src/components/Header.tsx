@@ -51,7 +51,7 @@ export function Header({ onJoinOwner, onJoinCrew }: HeaderProps) {
           data-ocid="nav.link"
         >
           <img
-            src="/assets/uploads/9A7DD908-5829-4627-A957-C41626D3EE30-1.png"
+            src="/assets/uploads/Logo-1.png"
             alt="Cleanzo"
             className="h-9 w-auto object-contain"
           />
@@ -88,20 +88,19 @@ export function Header({ onJoinOwner, onJoinCrew }: HeaderProps) {
 
         {/* Right actions */}
         <div className="flex items-center gap-2 shrink-0">
-          {/* Theme Toggle */}
+          {/* Theme toggle */}
           <button
             type="button"
             onClick={toggleTheme}
             aria-label={
-              theme === "light" ? "Switch to dark mode" : "Switch to light mode"
+              theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
             }
-            className="w-9 h-9 flex items-center justify-center rounded-lg bg-secondary hover:bg-secondary/80 border border-border/50 transition-colors"
-            data-ocid="nav.toggle"
+            className="w-9 h-9 flex items-center justify-center rounded-lg border border-border/50 bg-background/60 hover:bg-secondary/60 transition-colors text-muted-foreground hover:text-foreground"
           >
-            {theme === "light" ? (
-              <Moon className="w-4 h-4 text-foreground" />
+            {theme === "dark" ? (
+              <Sun className="w-4 h-4" />
             ) : (
-              <Sun className="w-4 h-4 text-foreground" />
+              <Moon className="w-4 h-4" />
             )}
           </button>
 

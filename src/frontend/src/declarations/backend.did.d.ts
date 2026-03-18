@@ -46,6 +46,15 @@ export interface PaymentRecord {
   'sessionId' : string,
   'amount' : bigint,
 }
+export interface WaitlistEntry {
+  'name' : string,
+  'email' : string,
+  'phone' : string,
+  'carModel' : string,
+  'sectorSociety' : string,
+  'carsInFamily' : bigint,
+  'submittedAt' : bigint,
+}
 export interface ShoppingItem {
   'productName' : string,
   'currency' : string,
@@ -116,6 +125,8 @@ export interface _SERVICE {
   'getScheduleForUser' : ActorMethod<[Principal], Array<Assignment>>,
   'getSkipDays' : ActorMethod<[Principal], Array<string>>,
   'getStripeSessionStatus' : ActorMethod<[string], StripeSessionStatus>,
+  'getWaitlistCount' : ActorMethod<[], bigint>,
+  'getWaitlistEntries' : ActorMethod<[], Array<WaitlistEntry>>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'isStripeConfigured' : ActorMethod<[], boolean>,
   'markAssignmentDone' : ActorMethod<[Principal, string], undefined>,
@@ -127,6 +138,7 @@ export interface _SERVICE {
   'registerCrewMember' : ActorMethod<[string, string], undefined>,
   'setStripeConfiguration' : ActorMethod<[StripeConfiguration], undefined>,
   'skipDay' : ActorMethod<[string], undefined>,
+  'submitWaitlist' : ActorMethod<[string, string, string, string, string, bigint], undefined>,
   'transform' : ActorMethod<[TransformationInput], TransformationOutput>,
   'updateAssignmentStatus' : ActorMethod<
     [Principal, string, AssignmentStatus],
