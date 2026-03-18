@@ -44,20 +44,18 @@ export function Header({ onJoinOwner, onJoinCrew }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 glass border-b border-border/40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-        {/* Logo + Slogan */}
-        <Link
-          to="/"
-          className="flex flex-col items-start shrink-0"
-          data-ocid="nav.link"
-        >
-          <img
-            src="/assets/uploads/Logo-1.png"
-            alt="Cleanzo"
-            className="h-9 w-auto object-contain"
-          />
-          <span className="text-[10px] font-semibold tracking-widest uppercase text-primary/80 leading-tight -mt-0.5">
-            Daily Shine | Zero Hassle
-          </span>
+        {/* Logo + Slogan — dark pill wrapper ensures visibility on any bg */}
+        <Link to="/" className="flex shrink-0" data-ocid="nav.link">
+          <div className="bg-slate-800/90 rounded-xl px-3 py-1.5 flex flex-col items-start">
+            <img
+              src="/assets/uploads/Logo-1.png"
+              alt="Cleanzo"
+              className="h-8 w-auto object-contain"
+            />
+            <span className="text-[9px] font-semibold tracking-widest uppercase text-blue-300/90 leading-tight">
+              Daily Shine | Zero Hassle
+            </span>
+          </div>
         </Link>
 
         {/* Desktop nav */}
@@ -132,7 +130,7 @@ export function Header({ onJoinOwner, onJoinCrew }: HeaderProps) {
                 <button
                   type="button"
                   onClick={handleSignUp}
-                  className="text-accent hover:text-accent/80 font-medium underline-offset-2 hover:underline transition-colors"
+                  className="text-primary font-semibold hover:text-primary/80 underline-offset-2 hover:underline transition-colors"
                   data-ocid="nav.link"
                 >
                   Sign up now
@@ -212,7 +210,7 @@ export function Header({ onJoinOwner, onJoinCrew }: HeaderProps) {
                     handleSignUp();
                     setMobileOpen(false);
                   }}
-                  className="text-accent font-medium"
+                  className="text-primary font-semibold"
                   data-ocid="nav.link"
                 >
                   Sign up now
