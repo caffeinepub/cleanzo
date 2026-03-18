@@ -18,7 +18,7 @@ import {
   Wrench,
 } from "lucide-react";
 import { motion } from "motion/react";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { UserRole } from "../backend";
 import { CarOwnerRegistrationModal } from "../components/CarOwnerRegistrationModal";
 import { CrewRegistrationModal } from "../components/CrewRegistrationModal";
@@ -148,11 +148,15 @@ export function LandingPage() {
     } else setCrewModalOpen(true);
   };
 
-  const handleRegistrationSuccess = () => {
+  const pendingNavRef = useRef<"owner" | "crew" | null>(null);
+
+  const handleRegistrationSuccess = (type: "owner" | "crew") => {
+    pendingNavRef.current = type;
     setTimeout(() => {
-      if (carOwnerProfile || ownerModalOpen) navigate({ to: "/owner" });
-      else if (crewProfile || crewModalOpen) navigate({ to: "/crew" });
-    }, 500);
+      if (pendingNavRef.current === "owner") navigate({ to: "/owner" });
+      else if (pendingNavRef.current === "crew") navigate({ to: "/crew" });
+      pendingNavRef.current = null;
+    }, 600);
   };
 
   return (
@@ -789,12 +793,12 @@ export function LandingPage() {
       <CarOwnerRegistrationModal
         open={ownerModalOpen}
         onOpenChange={setOwnerModalOpen}
-        onSuccess={handleRegistrationSuccess}
+        onSuccess={() => handleRegistrationSuccess("owner")}
       />
       <CrewRegistrationModal
         open={crewModalOpen}
         onOpenChange={setCrewModalOpen}
-        onSuccess={handleRegistrationSuccess}
+        onSuccess={() => handleRegistrationSuccess("crew")}
       />
       <WaitlistModal open={waitlistOpen} onOpenChange={setWaitlistOpen} />
     </div>

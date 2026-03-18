@@ -1,7 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { Heart, Users, Zap } from "lucide-react";
 import { motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { UserRole } from "../backend";
 import { CarOwnerRegistrationModal } from "../components/CarOwnerRegistrationModal";
 import { CrewRegistrationModal } from "../components/CrewRegistrationModal";
@@ -88,11 +88,15 @@ export function AboutPage() {
       login();
     } else setCrewModalOpen(true);
   };
-  const handleSuccess = () => {
+  const pendingNavRef = useRef<"owner" | "crew" | null>(null);
+
+  const handleSuccess = (type: "owner" | "crew") => {
+    pendingNavRef.current = type;
     setTimeout(() => {
-      if (carOwnerProfile || ownerModalOpen) navigate({ to: "/owner" });
-      else if (crewProfile || crewModalOpen) navigate({ to: "/crew" });
-    }, 500);
+      if (pendingNavRef.current === "owner") navigate({ to: "/owner" });
+      else if (pendingNavRef.current === "crew") navigate({ to: "/crew" });
+      pendingNavRef.current = null;
+    }, 600);
   };
 
   return (
@@ -164,7 +168,7 @@ export function AboutPage() {
               className="rounded-3xl bg-card border border-border/50 p-10 text-center"
             >
               <img
-                src="/assets/uploads/Logo-1.png"
+                src="/assets/uploads/9A7DD908-5829-4627-A957-C41626D3EE30-1-1.png"
                 alt="Cleanzo logo"
                 className="h-20 w-auto mx-auto mb-5 object-contain"
               />
@@ -225,12 +229,12 @@ export function AboutPage() {
       <CarOwnerRegistrationModal
         open={ownerModalOpen}
         onOpenChange={setOwnerModalOpen}
-        onSuccess={handleSuccess}
+        onSuccess={() => handleSuccess("owner")}
       />
       <CrewRegistrationModal
         open={crewModalOpen}
         onOpenChange={setCrewModalOpen}
-        onSuccess={handleSuccess}
+        onSuccess={() => handleSuccess("crew")}
       />
     </div>
   );

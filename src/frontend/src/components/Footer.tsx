@@ -10,7 +10,7 @@ export function Footer() {
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-3">
               <img
-                src="/assets/uploads/Logo-1.png"
+                src="/assets/uploads/9A7DD908-5829-4627-A957-C41626D3EE30-1-1.png"
                 alt="Cleanzo"
                 className="h-8 w-auto object-contain"
               />

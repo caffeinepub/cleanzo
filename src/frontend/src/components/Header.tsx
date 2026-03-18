@@ -1,18 +1,9 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "@tanstack/react-router";
-import {
-  Loader2,
-  LogIn,
-  LogOut,
-  Menu,
-  Moon,
-  Sun,
-  Wrench,
-  X,
-} from "lucide-react";
+import { Loader2, LogIn, LogOut, Menu, Wrench, X } from "lucide-react";
 import { useState } from "react";
-import { useTheme } from "../context/ThemeContext";
+
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 
 interface HeaderProps {
@@ -33,7 +24,7 @@ const navLinks = [
 export function Header({ onJoinOwner, onJoinCrew }: HeaderProps) {
   const { identity, login, clear, isLoggingIn, isInitializing } =
     useInternetIdentity();
-  const { theme, toggleTheme } = useTheme();
+
   const [mobileOpen, setMobileOpen] = useState(false);
   const isLoggedIn = !!identity && !identity.getPrincipal().isAnonymous();
 
@@ -46,13 +37,13 @@ export function Header({ onJoinOwner, onJoinCrew }: HeaderProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
         {/* Logo + Slogan — dark pill wrapper ensures visibility on any bg */}
         <Link to="/" className="flex shrink-0" data-ocid="nav.link">
-          <div className="bg-slate-800/90 rounded-xl px-3 py-1.5 flex flex-col items-start">
+          <div className="flex flex-col items-start">
             <img
-              src="/assets/uploads/Logo-1.png"
+              src="/assets/uploads/9A7DD908-5829-4627-A957-C41626D3EE30-1-1.png"
               alt="Cleanzo"
               className="h-8 w-auto object-contain"
             />
-            <span className="text-[9px] font-semibold tracking-widest uppercase text-blue-300/90 leading-tight">
+            <span className="text-[9px] font-semibold tracking-widest uppercase text-blue-600 leading-tight">
               Daily Shine | Zero Hassle
             </span>
           </div>
@@ -86,22 +77,6 @@ export function Header({ onJoinOwner, onJoinCrew }: HeaderProps) {
 
         {/* Right actions */}
         <div className="flex items-center gap-2 shrink-0">
-          {/* Theme toggle */}
-          <button
-            type="button"
-            onClick={toggleTheme}
-            aria-label={
-              theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
-            }
-            className="w-9 h-9 flex items-center justify-center rounded-lg border border-border/50 bg-background/60 hover:bg-secondary/60 transition-colors text-muted-foreground hover:text-foreground"
-          >
-            {theme === "dark" ? (
-              <Sun className="w-4 h-4" />
-            ) : (
-              <Moon className="w-4 h-4" />
-            )}
-          </button>
-
           {isInitializing ? (
             <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
           ) : isLoggedIn ? (
