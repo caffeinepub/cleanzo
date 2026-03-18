@@ -225,11 +225,6 @@ export function PricingPage() {
                         "radial-gradient(circle, oklch(0.78 0.15 75), transparent 70%)",
                     }}
                   />
-                  <div className="absolute top-5 right-5">
-                    <span className="inline-flex items-center text-xs font-bold px-3 py-1.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40">
-                      ✦ Most Popular
-                    </span>
-                  </div>
                   <div className="mb-9">
                     <h2 className="text-2xl font-display font-700 mb-1">
                       SUV Plan

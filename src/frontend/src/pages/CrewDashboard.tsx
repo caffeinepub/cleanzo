@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Principal } from "@icp-sdk/core/principal";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { format, parseISO } from "date-fns";
 import {
   AlertCircle,
@@ -114,6 +114,7 @@ function AssignmentCard({
 
 export function CrewDashboard() {
   const { identity, clear } = useInternetIdentity();
+  const navigate = useNavigate();
   const principal = identity?.getPrincipal();
   const [selectedDate, setSelectedDate] = useState(
     format(new Date(), "yyyy-MM-dd"),
@@ -155,7 +156,10 @@ export function CrewDashboard() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={clear}
+            onClick={async () => {
+              await clear();
+              navigate({ to: "/" });
+            }}
             className="text-muted-foreground"
             data-ocid="nav.button"
           >
@@ -168,6 +172,24 @@ export function CrewDashboard() {
         className="max-w-4xl mx-auto px-4 py-8 space-y-6"
         data-ocid="crew.dashboard.panel"
       >
+        {/* Waiting for approval banner */}
+        {profile && !profile.isActive && (
+          <div
+            className="flex items-start gap-3 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 p-4"
+            data-ocid="crew.dashboard.panel"
+          >
+            <span className="text-2xl">⏳</span>
+            <div>
+              <p className="font-semibold text-amber-800 dark:text-amber-300 text-sm">
+                Your account is waiting for admin approval.
+              </p>
+              <p className="text-amber-700 dark:text-amber-400 text-xs mt-0.5">
+                We will notify you once your profile is verified and activated.
+                Usually takes 24 to 48 hours.
+              </p>
+            </div>
+          </div>
+        )}
         {/* Welcome banner */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}

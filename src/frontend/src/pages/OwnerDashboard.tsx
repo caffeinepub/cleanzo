@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import {
   eachDayOfInterval,
   endOfMonth,
@@ -76,6 +76,7 @@ const statusConfig = {
 
 export function OwnerDashboard() {
   const { identity, clear } = useInternetIdentity();
+  const navigate = useNavigate();
   const principal = identity?.getPrincipal();
   const [currentMonth] = useState(new Date());
 
@@ -159,7 +160,10 @@ export function OwnerDashboard() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={clear}
+            onClick={async () => {
+              await clear();
+              navigate({ to: "/" });
+            }}
             className="text-muted-foreground"
             data-ocid="nav.button"
           >
