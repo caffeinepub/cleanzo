@@ -1,5 +1,11 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
@@ -13,12 +19,14 @@ import {
 } from "date-fns";
 import {
   AlertCircle,
+  Bell,
   Calendar,
   Car,
   CheckCircle2,
   Clock,
   CreditCard,
   Droplets,
+  Image,
   Lock,
   LogOut,
   SkipForward,
@@ -28,11 +36,16 @@ import { motion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { CarType } from "../backend";
+import type { ServicePhoto } from "../backend";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
+import { usePhotoUpload } from "../hooks/usePhotoUpload";
 import {
   AssignmentStatus,
   useCarOwnerProfile,
+  useMarkNotificationAsRead,
+  useNotifications,
   useScheduleForUser,
+  useServicePhotosForCarOwner,
   useSkipDay,
   useSkipDays,
 } from "../hooks/useQueries";
@@ -65,7 +78,8 @@ const statusConfig = {
   [AssignmentStatus.done]: {
     label: "Done",
     icon: CheckCircle2,
-    className: "bg-green-100 text-green-800",
+    className:
+      "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
   },
   [AssignmentStatus.skipped]: {
     label: "Skipped",
@@ -74,11 +88,69 @@ const statusConfig = {
   },
 };
 
+function ServicePhotoViewer({ photo }: { photo: ServicePhoto }) {
+  const { getPhotoUrl } = usePhotoUpload();
+  const [beforeUrl, setBeforeUrl] = useState("");
+  const [afterUrl, setAfterUrl] = useState("");
+
+  useState(() => {
+    if (photo.beforePhotoId) {
+      getPhotoUrl(photo.beforePhotoId)
+        .then(setBeforeUrl)
+        .catch(() => {});
+    }
+    if (photo.afterPhotoId) {
+      getPhotoUrl(photo.afterPhotoId)
+        .then(setAfterUrl)
+        .catch(() => {});
+    }
+  });
+
+  return (
+    <div className="grid grid-cols-2 gap-4">
+      <div>
+        <p className="text-xs font-semibold text-muted-foreground mb-2">
+          Before
+        </p>
+        {beforeUrl ? (
+          <img
+            src={beforeUrl}
+            alt="before"
+            className="w-full aspect-video object-cover rounded-xl border border-border"
+          />
+        ) : (
+          <div className="w-full aspect-video rounded-xl bg-muted flex items-center justify-center">
+            <Image className="w-6 h-6 text-muted-foreground/40" />
+          </div>
+        )}
+      </div>
+      <div>
+        <p className="text-xs font-semibold text-muted-foreground mb-2">
+          After
+        </p>
+        {afterUrl ? (
+          <img
+            src={afterUrl}
+            alt="after"
+            className="w-full aspect-video object-cover rounded-xl border border-border"
+          />
+        ) : (
+          <div className="w-full aspect-video rounded-xl bg-muted flex items-center justify-center">
+            <Image className="w-6 h-6 text-muted-foreground/40" />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function OwnerDashboard() {
   const { identity, clear } = useInternetIdentity();
   const navigate = useNavigate();
   const principal = identity?.getPrincipal();
   const [currentMonth] = useState(new Date());
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [photoModal, setPhotoModal] = useState<ServicePhoto | null>(null);
 
   const { data: profile, isLoading: profileLoading } =
     useCarOwnerProfile(principal);
@@ -87,6 +159,11 @@ export function OwnerDashboard() {
   const { data: schedule = [], isLoading: scheduleLoading } =
     useScheduleForUser(principal);
   const { mutateAsync: skipDay, isPending: isSkipping } = useSkipDay();
+  const { data: notifications = [] } = useNotifications();
+  const { mutateAsync: markRead } = useMarkNotificationAsRead();
+  const { data: servicePhotos = [] } = useServicePhotosForCarOwner(principal);
+
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   const monthDays = eachDayOfInterval({
     start: startOfMonth(currentMonth),
@@ -118,6 +195,14 @@ export function OwnerDashboard() {
       toast.success(`Skipped ${format(date, "MMMM d")} successfully.`);
     } catch {
       toast.error("Failed to skip day. Please try again.");
+    }
+  };
+
+  const handleMarkRead = async (id: string) => {
+    try {
+      await markRead(id);
+    } catch {
+      // silent
     }
   };
 
@@ -155,20 +240,36 @@ export function OwnerDashboard() {
             <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
               <Droplets className="w-3.5 h-3.5 text-primary-foreground" />
             </div>
-            <span className="font-display font-700 text-base">Cleanzo</span>
+            <span className="font-display font-bold text-base">Cleanzo</span>
           </Link>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={async () => {
-              await clear();
-              navigate({ to: "/" });
-            }}
-            className="text-muted-foreground"
-            data-ocid="nav.button"
-          >
-            <LogOut className="w-4 h-4 mr-1.5" /> Sign out
-          </Button>
+          <div className="flex items-center gap-2">
+            {/* Notification Bell */}
+            <button
+              type="button"
+              onClick={() => setNotifOpen((prev) => !prev)}
+              className="relative p-2 rounded-lg hover:bg-secondary transition-colors"
+              data-ocid="owner.notifications.button"
+            >
+              <Bell className="w-5 h-5 text-muted-foreground" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+            </button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={async () => {
+                await clear();
+                navigate({ to: "/" });
+              }}
+              className="text-muted-foreground"
+              data-ocid="nav.button"
+            >
+              <LogOut className="w-4 h-4 mr-1.5" /> Sign out
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -176,6 +277,83 @@ export function OwnerDashboard() {
         className="max-w-4xl mx-auto px-4 py-8 space-y-8"
         data-ocid="owner.dashboard.panel"
       >
+        {/* Notifications Panel */}
+        {notifOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-card rounded-2xl border border-border shadow-card overflow-hidden"
+            data-ocid="owner.notifications.panel"
+          >
+            <div className="p-5 border-b border-border flex items-center justify-between">
+              <h2 className="text-lg font-display font-bold flex items-center gap-2">
+                <Bell className="w-5 h-5 text-primary" />
+                Notifications
+              </h2>
+              {unreadCount > 0 && (
+                <Badge className="bg-primary/10 text-primary border-primary/20">
+                  {unreadCount} new
+                </Badge>
+              )}
+            </div>
+            {notifications.length === 0 ? (
+              <div
+                className="text-center py-10"
+                data-ocid="owner.notifications.empty_state"
+              >
+                <Bell className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
+                <p className="text-muted-foreground text-sm">
+                  No notifications yet
+                </p>
+              </div>
+            ) : (
+              <ul className="divide-y divide-border">
+                {notifications.map((notif, idx) => (
+                  <li
+                    key={notif.id}
+                    className={[
+                      "p-4 flex items-start gap-3 cursor-pointer hover:bg-secondary/40 transition-colors",
+                      !notif.read ? "bg-primary/5" : "",
+                    ].join(" ")}
+                    onClick={() => !notif.read && handleMarkRead(notif.id)}
+                    onKeyDown={(e) =>
+                      e.key === "Enter" &&
+                      !notif.read &&
+                      handleMarkRead(notif.id)
+                    }
+                    data-ocid={`owner.notification.item.${idx + 1}`}
+                  >
+                    <div
+                      className={[
+                        "w-2 h-2 rounded-full mt-1.5 shrink-0",
+                        !notif.read ? "bg-primary" : "bg-muted",
+                      ].join(" ")}
+                    />
+                    <div className="flex-1">
+                      <p
+                        className={[
+                          "text-sm",
+                          !notif.read
+                            ? "font-semibold text-foreground"
+                            : "text-muted-foreground",
+                        ].join(" ")}
+                      >
+                        {notif.message}
+                      </p>
+                      <p className="text-xs text-muted-foreground/70 mt-0.5">
+                        {format(
+                          new Date(Number(notif.timestamp) / 1_000_000),
+                          "MMM d 'at' h:mm a",
+                        )}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </motion.div>
+        )}
+
         {/* Welcome card */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -189,7 +367,7 @@ export function OwnerDashboard() {
                 <p className="text-primary-foreground/70 text-sm font-medium mb-1">
                   Welcome back,
                 </p>
-                <h1 className="text-3xl font-display font-800 text-white">
+                <h1 className="text-3xl font-display font-extrabold text-white">
                   {profile?.name ?? "Car Owner"}
                 </h1>
               </div>
@@ -218,14 +396,14 @@ export function OwnerDashboard() {
                 <div className="flex items-center gap-2 text-sm text-primary-foreground/80">
                   <Car className="w-4 h-4" />
                   <span>
-                    {profile.carNumber} · {profile.carModel}
+                    {profile.carNumber} &middot; {profile.carModel}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-primary-foreground/80">
                   <span className="font-medium">
                     {CAR_TYPE_LABELS[profile.carType]}
                   </span>
-                  <span>·</span>
+                  <span>&middot;</span>
                   <span>&#8377;{Number(profile.priceSegment)}/month</span>
                 </div>
               </div>
@@ -247,7 +425,7 @@ export function OwnerDashboard() {
                 <CreditCard className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <h2 className="text-base font-display font-700">Payment</h2>
+                <h2 className="text-base font-display font-bold">Payment</h2>
                 <p className="text-xs text-muted-foreground">
                   Subscription billing
                 </p>
@@ -267,13 +445,14 @@ export function OwnerDashboard() {
                   Razorpay Gateway
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  UPI · Credit/Debit Cards · Net Banking · Wallets
+                  UPI &middot; Credit/Debit Cards &middot; Net Banking &middot;
+                  Wallets
                 </p>
               </div>
             </div>
             {profile && (
               <div className="text-right">
-                <p className="text-xl font-display font-800 text-foreground">
+                <p className="text-xl font-display font-extrabold text-foreground">
                   &#8377;{Number(profile.priceSegment)}
                 </p>
                 <p className="text-xs text-muted-foreground">per month</p>
@@ -295,13 +474,13 @@ export function OwnerDashboard() {
         >
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="text-xl font-display font-700">Skip Days</h2>
+              <h2 className="text-xl font-display font-bold">Skip Days</h2>
               <p className="text-sm text-muted-foreground mt-0.5">
                 Click a future date to skip service that day.
               </p>
             </div>
             <div className="text-right">
-              <p className="text-2xl font-display font-800 text-foreground">
+              <p className="text-2xl font-display font-extrabold text-foreground">
                 {remainingSkips}
               </p>
               <p className="text-xs text-muted-foreground">of 7 skips left</p>
@@ -351,7 +530,9 @@ export function OwnerDashboard() {
                     data-ocid="owner.skip_day.button"
                   >
                     {day.getDate()}
-                    {isSkipped && <span className="skip-day-dot" />}
+                    {isSkipped && (
+                      <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary" />
+                    )}
                   </button>
                 );
               })}
@@ -387,7 +568,7 @@ export function OwnerDashboard() {
           transition={{ delay: 0.2 }}
           className="bg-card rounded-2xl p-6 shadow-card border border-border"
         >
-          <h2 className="text-xl font-display font-700 mb-5">
+          <h2 className="text-xl font-display font-bold mb-5">
             Upcoming Schedule
           </h2>
 
@@ -415,6 +596,9 @@ export function OwnerDashboard() {
               {upcomingAssignments.map((assignment, idx) => {
                 const config = statusConfig[assignment.status];
                 const Icon = config.icon;
+                const photo = servicePhotos.find(
+                  (p) => p.date === assignment.date,
+                );
                 return (
                   <li
                     key={assignment.date}
@@ -434,10 +618,23 @@ export function OwnerDashboard() {
                         </p>
                       </div>
                     </div>
-                    <Badge className={config.className}>
-                      <Icon className="w-3 h-3 mr-1" />
-                      {config.label}
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      {photo && assignment.status === AssignmentStatus.done && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-xs h-7 gap-1"
+                          onClick={() => setPhotoModal(photo)}
+                          data-ocid={`owner.view_photos.button.${idx + 1}`}
+                        >
+                          <Image className="w-3 h-3" /> Photos
+                        </Button>
+                      )}
+                      <Badge className={config.className}>
+                        <Icon className="w-3 h-3 mr-1" />
+                        {config.label}
+                      </Badge>
+                    </div>
                   </li>
                 );
               })}
@@ -446,9 +643,28 @@ export function OwnerDashboard() {
         </motion.div>
       </main>
 
+      {/* Service Photo Modal */}
+      <Dialog
+        open={!!photoModal}
+        onOpenChange={(open) => !open && setPhotoModal(null)}
+      >
+        <DialogContent className="max-w-lg" data-ocid="owner.photos.dialog">
+          <DialogHeader>
+            <DialogTitle>
+              Service Photos &middot;{" "}
+              {photoModal && format(parseISO(photoModal.date), "MMMM d, yyyy")}
+            </DialogTitle>
+          </DialogHeader>
+          {photoModal && <ServicePhotoViewer photo={photoModal} />}
+          <p className="text-xs text-muted-foreground mt-2">
+            Photos uploaded by your crew after completing the service.
+          </p>
+        </DialogContent>
+      </Dialog>
+
       <footer className="py-6 border-t border-border mt-8">
         <p className="text-center text-xs text-muted-foreground">
-          &copy; {new Date().getFullYear()}. Built with ❤️ using{" "}
+          &copy; {new Date().getFullYear()}. Built with &hearts; using{" "}
           <a
             href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
             target="_blank"

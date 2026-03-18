@@ -8,6 +8,17 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
+export const _CaffeineStorageCreateCertificateResult = IDL.Record({
+  'method' : IDL.Text,
+  'blob_hash' : IDL.Text,
+});
+export const _CaffeineStorageRefillInformation = IDL.Record({
+  'proposed_top_up_amount' : IDL.Opt(IDL.Nat),
+});
+export const _CaffeineStorageRefillResult = IDL.Record({
+  'success' : IDL.Opt(IDL.Bool),
+  'topped_up_amount' : IDL.Opt(IDL.Nat),
+});
 export const UserRole = IDL.Variant({
   'admin' : IDL.Null,
   'user' : IDL.Null,
@@ -37,9 +48,16 @@ export const CarOwnerProfile = IDL.Record({
   'phone' : IDL.Text,
   'registrationDate' : IDL.Int,
 });
+export const ApprovalStatus = IDL.Variant({
+  'pending' : IDL.Null,
+  'approved' : IDL.Null,
+  'rejected' : IDL.Null,
+});
 export const CrewMemberProfile = IDL.Record({
   'name' : IDL.Text,
   'isActive' : IDL.Bool,
+  'email' : IDL.Text,
+  'approvalStatus' : ApprovalStatus,
   'phone' : IDL.Text,
 });
 export const AssignmentStatus = IDL.Variant({
@@ -53,6 +71,27 @@ export const Assignment = IDL.Record({
   'crewMemberId' : IDL.Principal,
   'carOwnerId' : IDL.Principal,
 });
+export const AttendanceRecord = IDL.Record({
+  'date' : IDL.Text,
+  'hoursWorked' : IDL.Opt(IDL.Float64),
+  'clockOut' : IDL.Opt(IDL.Int),
+  'clockIn' : IDL.Int,
+});
+export const UserProfile = IDL.Record({ 'name' : IDL.Text });
+export const Notification = IDL.Record({
+  'id' : IDL.Text,
+  'userId' : IDL.Principal,
+  'read' : IDL.Bool,
+  'message' : IDL.Text,
+  'timestamp' : IDL.Int,
+});
+export const PayRelease = IDL.Record({
+  'totalHours' : IDL.Float64,
+  'crewMemberId' : IDL.Principal,
+  'releasedAt' : IDL.Int,
+  'amount' : IDL.Nat,
+  'weekStart' : IDL.Text,
+});
 export const PaymentRecord = IDL.Record({
   'status' : IDL.Text,
   'currency' : IDL.Text,
@@ -60,14 +99,14 @@ export const PaymentRecord = IDL.Record({
   'sessionId' : IDL.Text,
   'amount' : IDL.Nat,
 });
-export const WaitlistEntry = IDL.Record({
-  'name' : IDL.Text,
-  'email' : IDL.Text,
-  'phone' : IDL.Text,
-  'carModel' : IDL.Text,
-  'sectorSociety' : IDL.Text,
-  'carsInFamily' : IDL.Nat,
-  'submittedAt' : IDL.Int,
+export const ServicePhoto = IDL.Record({
+  'id' : IDL.Text,
+  'date' : IDL.Text,
+  'crewMemberId' : IDL.Principal,
+  'beforePhotoId' : IDL.Text,
+  'carOwnerId' : IDL.Principal,
+  'afterPhotoId' : IDL.Text,
+  'uploadedAt' : IDL.Int,
 });
 export const StripeSessionStatus = IDL.Variant({
   'completed' : IDL.Record({
@@ -75,6 +114,21 @@ export const StripeSessionStatus = IDL.Variant({
     'response' : IDL.Text,
   }),
   'failed' : IDL.Record({ 'error' : IDL.Text }),
+});
+export const WaitlistEntry = IDL.Record({
+  'carModel' : IDL.Text,
+  'name' : IDL.Text,
+  'sectorSociety' : IDL.Text,
+  'submittedAt' : IDL.Int,
+  'email' : IDL.Text,
+  'phone' : IDL.Text,
+  'carsInFamily' : IDL.Nat,
+});
+export const WeeklyPaySummary = IDL.Record({
+  'records' : IDL.Vec(AttendanceRecord),
+  'totalHours' : IDL.Float64,
+  'crewMemberId' : IDL.Principal,
+  'weekStart' : IDL.Text,
 });
 export const StripeConfiguration = IDL.Record({
   'allowedCountries' : IDL.Vec(IDL.Text),
@@ -100,18 +154,47 @@ export const TransformationOutput = IDL.Record({
 });
 
 export const idlService = IDL.Service({
+  '_caffeineStorageBlobIsLive' : IDL.Func(
+      [IDL.Vec(IDL.Nat8)],
+      [IDL.Bool],
+      ['query'],
+    ),
+  '_caffeineStorageBlobsToDelete' : IDL.Func(
+      [],
+      [IDL.Vec(IDL.Vec(IDL.Nat8))],
+      ['query'],
+    ),
+  '_caffeineStorageConfirmBlobDeletion' : IDL.Func(
+      [IDL.Vec(IDL.Vec(IDL.Nat8))],
+      [],
+      [],
+    ),
+  '_caffeineStorageCreateCertificate' : IDL.Func(
+      [IDL.Text],
+      [_CaffeineStorageCreateCertificateResult],
+      [],
+    ),
+  '_caffeineStorageRefillCashier' : IDL.Func(
+      [IDL.Opt(_CaffeineStorageRefillInformation)],
+      [_CaffeineStorageRefillResult],
+      [],
+    ),
+  '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'addBulkAssignments' : IDL.Func(
       [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Principal))],
       [],
       [],
     ),
+  'approveCrewMember' : IDL.Func([IDL.Principal], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'assignCarOwnerToCrewMember' : IDL.Func(
       [IDL.Principal, IDL.Principal, IDL.Text],
       [],
       [],
     ),
+  'clockIn' : IDL.Func([IDL.Text], [], []),
+  'clockOut' : IDL.Func([IDL.Text], [], []),
   'createCheckoutSession' : IDL.Func(
       [IDL.Vec(ShoppingItem), IDL.Text, IDL.Text],
       [IDL.Text],
@@ -124,7 +207,7 @@ export const idlService = IDL.Service({
     ),
   'getActiveCrewMembers' : IDL.Func(
       [],
-      [IDL.Vec(IDL.Tuple(IDL.Principal, CarOwnerProfile)), IDL.Nat],
+      [IDL.Vec(IDL.Tuple(IDL.Principal, CrewMemberProfile)), IDL.Nat],
       ['query'],
     ),
   'getAllCarOwners' : IDL.Func([], [IDL.Vec(CarOwnerProfile)], ['query']),
@@ -134,6 +217,12 @@ export const idlService = IDL.Service({
       [IDL.Vec(Assignment)],
       ['query'],
     ),
+  'getAttendanceLogs' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Vec(AttendanceRecord)],
+      ['query'],
+    ),
+  'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getCarOwnerProfile' : IDL.Func(
       [IDL.Principal],
@@ -146,6 +235,12 @@ export const idlService = IDL.Service({
       ['query'],
     ),
   'getDailySchedule' : IDL.Func([IDL.Text], [IDL.Vec(Assignment)], ['query']),
+  'getNotifications' : IDL.Func([], [IDL.Vec(Notification)], ['query']),
+  'getPayReleaseHistory' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Vec(PayRelease)],
+      ['query'],
+    ),
   'getPaymentHistory' : IDL.Func(
       [IDL.Principal],
       [IDL.Vec(PaymentRecord)],
@@ -156,13 +251,39 @@ export const idlService = IDL.Service({
       [IDL.Vec(Assignment)],
       ['query'],
     ),
+  'getServicePhoto' : IDL.Func(
+      [IDL.Principal, IDL.Principal, IDL.Text],
+      [IDL.Opt(ServicePhoto)],
+      ['query'],
+    ),
+  'getServicePhotosForCarOwner' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Vec(ServicePhoto)],
+      ['query'],
+    ),
+  'getServicePhotosForCrewMember' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Vec(ServicePhoto)],
+      ['query'],
+    ),
   'getSkipDays' : IDL.Func([IDL.Principal], [IDL.Vec(IDL.Text)], ['query']),
   'getStripeSessionStatus' : IDL.Func([IDL.Text], [StripeSessionStatus], []),
+  'getUserProfile' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Opt(UserProfile)],
+      ['query'],
+    ),
   'getWaitlistCount' : IDL.Func([], [IDL.Nat], ['query']),
   'getWaitlistEntries' : IDL.Func([], [IDL.Vec(WaitlistEntry)], ['query']),
+  'getWeeklyHoursSummary' : IDL.Func(
+      [IDL.Principal, IDL.Text],
+      [WeeklyPaySummary],
+      ['query'],
+    ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'isStripeConfigured' : IDL.Func([], [IDL.Bool], ['query']),
   'markAssignmentDone' : IDL.Func([IDL.Principal, IDL.Text], [], []),
+  'markNotificationAsRead' : IDL.Func([IDL.Text], [], []),
   'recordPayment' : IDL.Func(
       [IDL.Principal, IDL.Nat, IDL.Text, IDL.Text],
       [],
@@ -173,10 +294,26 @@ export const idlService = IDL.Service({
       [],
       [],
     ),
-  'registerCrewMember' : IDL.Func([IDL.Text, IDL.Text], [], []),
+  'registerCrewMember' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [], []),
+  'rejectCrewMember' : IDL.Func([IDL.Principal], [], []),
+  'releaseWeeklyPayment' : IDL.Func(
+      [IDL.Principal, IDL.Text, IDL.Nat, IDL.Float64],
+      [],
+      [],
+    ),
+  'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'saveServicePhoto' : IDL.Func(
+      [IDL.Principal, IDL.Text, IDL.Text, IDL.Text],
+      [],
+      [],
+    ),
   'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
   'skipDay' : IDL.Func([IDL.Text], [], []),
-  'submitWaitlist' : IDL.Func([IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Nat], [], []),
+  'submitWaitlist' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Nat],
+      [],
+      [],
+    ),
   'transform' : IDL.Func(
       [TransformationInput],
       [TransformationOutput],
@@ -194,6 +331,17 @@ export const idlService = IDL.Service({
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
+  const _CaffeineStorageCreateCertificateResult = IDL.Record({
+    'method' : IDL.Text,
+    'blob_hash' : IDL.Text,
+  });
+  const _CaffeineStorageRefillInformation = IDL.Record({
+    'proposed_top_up_amount' : IDL.Opt(IDL.Nat),
+  });
+  const _CaffeineStorageRefillResult = IDL.Record({
+    'success' : IDL.Opt(IDL.Bool),
+    'topped_up_amount' : IDL.Opt(IDL.Nat),
+  });
   const UserRole = IDL.Variant({
     'admin' : IDL.Null,
     'user' : IDL.Null,
@@ -223,9 +371,16 @@ export const idlFactory = ({ IDL }) => {
     'phone' : IDL.Text,
     'registrationDate' : IDL.Int,
   });
+  const ApprovalStatus = IDL.Variant({
+    'pending' : IDL.Null,
+    'approved' : IDL.Null,
+    'rejected' : IDL.Null,
+  });
   const CrewMemberProfile = IDL.Record({
     'name' : IDL.Text,
     'isActive' : IDL.Bool,
+    'email' : IDL.Text,
+    'approvalStatus' : ApprovalStatus,
     'phone' : IDL.Text,
   });
   const AssignmentStatus = IDL.Variant({
@@ -239,6 +394,27 @@ export const idlFactory = ({ IDL }) => {
     'crewMemberId' : IDL.Principal,
     'carOwnerId' : IDL.Principal,
   });
+  const AttendanceRecord = IDL.Record({
+    'date' : IDL.Text,
+    'hoursWorked' : IDL.Opt(IDL.Float64),
+    'clockOut' : IDL.Opt(IDL.Int),
+    'clockIn' : IDL.Int,
+  });
+  const UserProfile = IDL.Record({ 'name' : IDL.Text });
+  const Notification = IDL.Record({
+    'id' : IDL.Text,
+    'userId' : IDL.Principal,
+    'read' : IDL.Bool,
+    'message' : IDL.Text,
+    'timestamp' : IDL.Int,
+  });
+  const PayRelease = IDL.Record({
+    'totalHours' : IDL.Float64,
+    'crewMemberId' : IDL.Principal,
+    'releasedAt' : IDL.Int,
+    'amount' : IDL.Nat,
+    'weekStart' : IDL.Text,
+  });
   const PaymentRecord = IDL.Record({
     'status' : IDL.Text,
     'currency' : IDL.Text,
@@ -246,14 +422,14 @@ export const idlFactory = ({ IDL }) => {
     'sessionId' : IDL.Text,
     'amount' : IDL.Nat,
   });
-  const WaitlistEntry = IDL.Record({
-    'name' : IDL.Text,
-    'email' : IDL.Text,
-    'phone' : IDL.Text,
-    'carModel' : IDL.Text,
-    'sectorSociety' : IDL.Text,
-    'carsInFamily' : IDL.Nat,
-    'submittedAt' : IDL.Int,
+  const ServicePhoto = IDL.Record({
+    'id' : IDL.Text,
+    'date' : IDL.Text,
+    'crewMemberId' : IDL.Principal,
+    'beforePhotoId' : IDL.Text,
+    'carOwnerId' : IDL.Principal,
+    'afterPhotoId' : IDL.Text,
+    'uploadedAt' : IDL.Int,
   });
   const StripeSessionStatus = IDL.Variant({
     'completed' : IDL.Record({
@@ -261,6 +437,21 @@ export const idlFactory = ({ IDL }) => {
       'response' : IDL.Text,
     }),
     'failed' : IDL.Record({ 'error' : IDL.Text }),
+  });
+  const WaitlistEntry = IDL.Record({
+    'carModel' : IDL.Text,
+    'name' : IDL.Text,
+    'sectorSociety' : IDL.Text,
+    'submittedAt' : IDL.Int,
+    'email' : IDL.Text,
+    'phone' : IDL.Text,
+    'carsInFamily' : IDL.Nat,
+  });
+  const WeeklyPaySummary = IDL.Record({
+    'records' : IDL.Vec(AttendanceRecord),
+    'totalHours' : IDL.Float64,
+    'crewMemberId' : IDL.Principal,
+    'weekStart' : IDL.Text,
   });
   const StripeConfiguration = IDL.Record({
     'allowedCountries' : IDL.Vec(IDL.Text),
@@ -283,18 +474,47 @@ export const idlFactory = ({ IDL }) => {
   });
   
   return IDL.Service({
+    '_caffeineStorageBlobIsLive' : IDL.Func(
+        [IDL.Vec(IDL.Nat8)],
+        [IDL.Bool],
+        ['query'],
+      ),
+    '_caffeineStorageBlobsToDelete' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Vec(IDL.Nat8))],
+        ['query'],
+      ),
+    '_caffeineStorageConfirmBlobDeletion' : IDL.Func(
+        [IDL.Vec(IDL.Vec(IDL.Nat8))],
+        [],
+        [],
+      ),
+    '_caffeineStorageCreateCertificate' : IDL.Func(
+        [IDL.Text],
+        [_CaffeineStorageCreateCertificateResult],
+        [],
+      ),
+    '_caffeineStorageRefillCashier' : IDL.Func(
+        [IDL.Opt(_CaffeineStorageRefillInformation)],
+        [_CaffeineStorageRefillResult],
+        [],
+      ),
+    '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
     'addBulkAssignments' : IDL.Func(
         [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Principal))],
         [],
         [],
       ),
+    'approveCrewMember' : IDL.Func([IDL.Principal], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'assignCarOwnerToCrewMember' : IDL.Func(
         [IDL.Principal, IDL.Principal, IDL.Text],
         [],
         [],
       ),
+    'clockIn' : IDL.Func([IDL.Text], [], []),
+    'clockOut' : IDL.Func([IDL.Text], [], []),
     'createCheckoutSession' : IDL.Func(
         [IDL.Vec(ShoppingItem), IDL.Text, IDL.Text],
         [IDL.Text],
@@ -317,6 +537,12 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(Assignment)],
         ['query'],
       ),
+    'getAttendanceLogs' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Vec(AttendanceRecord)],
+        ['query'],
+      ),
+    'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getCarOwnerProfile' : IDL.Func(
         [IDL.Principal],
@@ -329,6 +555,12 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'getDailySchedule' : IDL.Func([IDL.Text], [IDL.Vec(Assignment)], ['query']),
+    'getNotifications' : IDL.Func([], [IDL.Vec(Notification)], ['query']),
+    'getPayReleaseHistory' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Vec(PayRelease)],
+        ['query'],
+      ),
     'getPaymentHistory' : IDL.Func(
         [IDL.Principal],
         [IDL.Vec(PaymentRecord)],
@@ -339,13 +571,39 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(Assignment)],
         ['query'],
       ),
+    'getServicePhoto' : IDL.Func(
+        [IDL.Principal, IDL.Principal, IDL.Text],
+        [IDL.Opt(ServicePhoto)],
+        ['query'],
+      ),
+    'getServicePhotosForCarOwner' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Vec(ServicePhoto)],
+        ['query'],
+      ),
+    'getServicePhotosForCrewMember' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Vec(ServicePhoto)],
+        ['query'],
+      ),
     'getSkipDays' : IDL.Func([IDL.Principal], [IDL.Vec(IDL.Text)], ['query']),
     'getStripeSessionStatus' : IDL.Func([IDL.Text], [StripeSessionStatus], []),
+    'getUserProfile' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Opt(UserProfile)],
+        ['query'],
+      ),
     'getWaitlistCount' : IDL.Func([], [IDL.Nat], ['query']),
     'getWaitlistEntries' : IDL.Func([], [IDL.Vec(WaitlistEntry)], ['query']),
+    'getWeeklyHoursSummary' : IDL.Func(
+        [IDL.Principal, IDL.Text],
+        [WeeklyPaySummary],
+        ['query'],
+      ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'isStripeConfigured' : IDL.Func([], [IDL.Bool], ['query']),
     'markAssignmentDone' : IDL.Func([IDL.Principal, IDL.Text], [], []),
+    'markNotificationAsRead' : IDL.Func([IDL.Text], [], []),
     'recordPayment' : IDL.Func(
         [IDL.Principal, IDL.Nat, IDL.Text, IDL.Text],
         [],
@@ -356,10 +614,26 @@ export const idlFactory = ({ IDL }) => {
         [],
         [],
       ),
-    'registerCrewMember' : IDL.Func([IDL.Text, IDL.Text], [], []),
+    'registerCrewMember' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [], []),
+    'rejectCrewMember' : IDL.Func([IDL.Principal], [], []),
+    'releaseWeeklyPayment' : IDL.Func(
+        [IDL.Principal, IDL.Text, IDL.Nat, IDL.Float64],
+        [],
+        [],
+      ),
+    'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'saveServicePhoto' : IDL.Func(
+        [IDL.Principal, IDL.Text, IDL.Text, IDL.Text],
+        [],
+        [],
+      ),
     'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
     'skipDay' : IDL.Func([IDL.Text], [], []),
-    'submitWaitlist' : IDL.Func([IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Nat], [], []),
+    'submitWaitlist' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Nat],
+        [],
+        [],
+      ),
     'transform' : IDL.Func(
         [TransformationInput],
         [TransformationOutput],

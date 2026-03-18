@@ -44,8 +44,8 @@ Cleanzo does not offer: interior cleaning, car washing with water, polishing, wa
     title: "Subscription & Pricing",
     content: `Cleanzo operates on a monthly auto-renewing subscription model:
 
-• Standard Plan (Hatchback / Sedan / Mid-SUV): Rs.399 per month
-• SUV Plan (Large SUV / 7-seaters): Rs.449 per month
+• Standard Plan (Hatchback / Sedan / Mid-SUV): ₹399 per month
+• SUV Plan (Large SUV / 7-seaters): ₹449 per month
 
 Subscriptions auto-renew on the same date each month. By subscribing, you authorise Cleanzo to charge your chosen payment method via Razorpay on the renewal date.
 
@@ -169,7 +169,7 @@ export function TermsPage() {
             </motion.div>
             <motion.h1
               variants={fadeUp}
-              className="text-5xl sm:text-6xl font-display font-800 leading-tight mb-5"
+              className="text-5xl sm:text-6xl font-display font-extrabold leading-tight mb-5"
             >
               Terms that <span className="text-gradient-blue">make sense</span>
             </motion.h1>

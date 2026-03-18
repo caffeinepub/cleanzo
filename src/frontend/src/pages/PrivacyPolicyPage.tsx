@@ -162,7 +162,7 @@ export function PrivacyPolicyPage() {
             </motion.div>
             <motion.h1
               variants={fadeUp}
-              className="text-5xl sm:text-6xl font-display font-800 leading-tight mb-5"
+              className="text-5xl sm:text-6xl font-display font-extrabold leading-tight mb-5"
             >
               Your data, <span className="text-gradient-blue">your rules</span>
             </motion.h1>

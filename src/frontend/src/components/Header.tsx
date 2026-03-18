@@ -154,22 +154,22 @@ export function Header({ onJoinOwner, onJoinCrew }: HeaderProps) {
                   {isLoggingIn ? "Signing in..." : "Sign In"}
                 </span>
               </Button>
-              {/* Mobile hamburger */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="lg:hidden"
-                onClick={() => setMobileOpen(!mobileOpen)}
-                data-ocid="nav.toggle"
-              >
-                {mobileOpen ? (
-                  <X className="w-4 h-4" />
-                ) : (
-                  <Menu className="w-4 h-4" />
-                )}
-              </Button>
             </div>
           )}
+          {/* Mobile hamburger - always visible on mobile */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="lg:hidden"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            data-ocid="nav.toggle"
+          >
+            {mobileOpen ? (
+              <X className="w-4 h-4" />
+            ) : (
+              <Menu className="w-4 h-4" />
+            )}
+          </Button>
         </div>
       </div>
 

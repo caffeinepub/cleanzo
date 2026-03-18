@@ -36,7 +36,7 @@ You will not be charged for the next month once you cancel. If you cancel mid-cy
     content: `Cleanzo offers a partial refund under the following conditions:
 
 • If you cancel within 7 days of your payment date, you are eligible for a 50% refund on unused subscription days.
-• Example: If you paid Rs.399 on March 1 and cancel on March 5 (having used 4 days), you will receive a 50% refund on the remaining 26 days, calculated proportionally.
+• Example: If you paid ₹399 on March 1 and cancel on March 5 (having used 4 days), you will receive a 50% refund on the remaining 26 days, calculated proportionally.
 • If you cancel after 7 days from the payment date, no refund is applicable for that billing cycle.
 • Refunds are not applicable for skip days -- skipping a day does not entitle you to a refund of that day's service cost.
 
@@ -125,7 +125,7 @@ export function RefundPolicyPage() {
             </motion.div>
             <motion.h1
               variants={fadeUp}
-              className="text-5xl sm:text-6xl font-display font-800 leading-tight mb-5"
+              className="text-5xl sm:text-6xl font-display font-extrabold leading-tight mb-5"
             >
               Fair & <span className="text-gradient-blue">transparent</span>{" "}
               refunds

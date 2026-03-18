@@ -1,30 +1,53 @@
 # Cleanzo
 
 ## Current State
-The app has a working theme toggle context but is missing `.dark` CSS variable overrides, so clicking the toggle button does nothing visually. Crew registration is a simple 2-field form (name + phone). Both dashboards have logout buttons but don't navigate to home after signing out. PricingPage has a 'Most Popular' badge on the SUV card. WhatsApp button links directly to wa.me without any message preselection.
+
+Cleanzo is a full-stack car dry-cleaning subscription app with three roles: car owner, crew member, and admin. The backend (Motoko) handles user registration, assignments, skip days, Stripe payments, and waitlist. The frontend has a landing page, crew/owner/admin dashboards, and legal pages.
+
+Currently missing:
+- Crew has no clock-in/clock-out, no hours log, no weekly pay records
+- Assignment mark-done has no photo proof upload
+- Customers see no notifications when assigned or service is completed
+- Landing page has no "How It Works" section
 
 ## Requested Changes (Diff)
 
 ### Add
-- `.dark` CSS block in index.css with dark-mode variable overrides so theme toggle visually works
-- Multi-step crew registration: Step 1 (phone + email + OTP method choice), Step 2 (OTP entry), Step 3 (ID proof type select + image upload via file picker or camera)
-- WhatsApp prewritten message popup: clicking the WA icon opens a small panel with 3 selectable messages, then opens WhatsApp with that message pre-filled
-- 'Waiting for approval' state on CrewDashboard when crew isActive is false
+- **Attendance system**: `clockIn(date)` and `clockOut(date)` backend functions for crew; stores timestamp per day; calculates hours worked
+- **Work hours log**: `getAttendanceLogs(crewId)` — admin and self can query; returns list of `{ date, clockInTime, clockOutTime, hoursWorked }`
+- **Weekly pay release**: `getWeeklyHoursSummary(crewId, weekStart)` and `releaseWeeklyPayment(crewId, weekStart, amount)` — admin only; stores payment released status
+- **Service photo proof**: `uploadServicePhoto(carOwnerId, date, photoType, blobId)` — stores before/after blob IDs against an assignment; `getServicePhotos(carOwnerId, date)` — owner, crew, and admin can query
+- **In-app notifications**: `getNotifications()` — returns notification list for the caller; notifications are created automatically when: (a) admin assigns a car owner to crew, (b) crew marks assignment done; `markNotificationRead(id)` — marks a notification as read
+- **"How It Works" section**: 3-step visual (Sign Up → Crew Comes → Car is Clean) added to landing page above the pricing section
 
 ### Modify
-- CrewRegistrationModal: fully rebuilt to multi-step OTP + document upload flow
-- CrewDashboard: logout navigates to "/" after clear(); show pending approval banner when isActive is false
-- OwnerDashboard: logout navigates to "/" after clear()
-- PricingPage: remove 'Most Popular' badge span
-- WhatsAppChat: show message-selection popup before opening WhatsApp
+- `markAssignmentDone` — after marking done, create a notification for the car owner: "Your car has been cleaned. Service completed by our crew at 5:00 AM."
+- `assignCarOwnerToCrewMember` — after assigning, create a notification for the car owner: "A crew member has been assigned to clean your car on [date]."
+- **CrewDashboard** — add Clock In / Clock Out buttons; show today's hours worked; show weekly hours summary and pay status
+- **AdminDashboard** — add Attendance tab: view all crew attendance logs; release weekly payment per crew member
+- **OwnerDashboard** — add Notifications section; add before/after photo viewer per completed assignment
+- **LandingPage** — add "How It Works" section with 3-step visual
 
 ### Remove
-- '✦ Most Popular' badge from PricingPage SUV card
+- Nothing removed
 
 ## Implementation Plan
-1. Add `.dark` block to index.css with dark background/foreground overrides
-2. Rewrite CrewRegistrationModal with 3-step flow (simulated OTP since no SMS service available)
-3. Update CrewDashboard to navigate to '/' on logout and show approval-pending banner
-4. Update OwnerDashboard to navigate to '/' on logout
-5. Remove Most Popular badge from PricingPage
-6. Update WhatsAppChat to show 3 prewritten message options popup
+
+1. **Backend additions** (Motoko):
+   - `AttendanceRecord` type: `{ date: Text, clockInTime: Int, clockOutTime: ?Int, hoursWorked: ?Float }`
+   - `PayRelease` type: `{ crewId: Principal, weekStart: Text, totalHours: Float, amount: Nat, releasedAt: Int }`
+   - `Notification` type: `{ id: Text, userId: Principal, message: Text, timestamp: Int, read: Bool }`
+   - `ServicePhoto` type: `{ carOwnerId: Principal, date: Text, beforePhotoId: ?Text, afterPhotoId: ?Text }`
+   - State maps: `crewAttendance`, `payReleases`, `notifications`, `servicePhotos`
+   - Functions: `clockIn`, `clockOut`, `getAttendanceLogs`, `getWeeklyHoursSummary`, `releaseWeeklyPayment`, `uploadServicePhoto`, `getServicePhotos`, `getNotifications`, `markNotificationRead`
+   - Modify `markAssignmentDone` and `assignCarOwnerToCrewMember` to create notifications
+
+2. **Frontend — CrewDashboard**: Clock In/Out buttons with live timer, daily hours display, weekly hours + pay status section
+
+3. **Frontend — AdminDashboard**: New "Attendance" tab showing all crew logs; weekly summary per crew; release payment button with amount input
+
+4. **Frontend — OwnerDashboard**: Notification bell/section showing unread/read alerts; before/after photo viewer on completed assignments
+
+5. **Frontend — Crew assignment cards**: "Upload Before Photo" and "Upload After Photo" buttons using blob-storage; calls `uploadServicePhoto` after upload
+
+6. **Frontend — LandingPage**: "How It Works" section with 3 icon cards (Sign Up, Crew Comes, Car is Clean) inserted above pricing

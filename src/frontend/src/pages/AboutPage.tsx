@@ -115,7 +115,7 @@ export function AboutPage() {
             </motion.p>
             <motion.h1
               variants={fadeUp}
-              className="text-5xl sm:text-6xl font-display font-800 leading-tight mb-6"
+              className="text-5xl sm:text-6xl font-display font-extrabold leading-tight mb-6"
             >
               The story behind{" "}
               <span className="text-gradient-blue">Cleanzo</span>
@@ -145,7 +145,7 @@ export function AboutPage() {
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary mb-4">
                 Our Mission
               </p>
-              <h2 className="text-3xl font-display font-700 mb-5 leading-tight">
+              <h2 className="text-3xl font-display font-bold mb-5 leading-tight">
                 Daily professional dry cleaning at your doorstep
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-4">
@@ -168,7 +168,7 @@ export function AboutPage() {
                 alt="Cleanzo logo"
                 className="h-20 w-auto mx-auto mb-5 object-contain"
               />
-              <p className="text-2xl font-display font-700 text-gradient-blue mb-2">
+              <p className="text-2xl font-display font-bold text-gradient-blue mb-2">
                 Daily Shine | Zero Hassle
               </p>
               <p className="text-sm text-muted-foreground">
@@ -192,7 +192,7 @@ export function AboutPage() {
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent mb-3">
                 What drives us
               </p>
-              <h2 className="text-3xl font-display font-700">Our values</h2>
+              <h2 className="text-3xl font-display font-bold">Our values</h2>
             </motion.div>
             <motion.div
               variants={stagger}
@@ -207,7 +207,7 @@ export function AboutPage() {
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
                     <Icon className="w-6 h-6 text-primary" />
                   </div>
-                  <h3 className="font-display font-700 text-lg mb-2">
+                  <h3 className="font-display font-bold text-lg mb-2">
                     {title}
                   </h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">

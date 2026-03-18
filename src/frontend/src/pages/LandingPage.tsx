@@ -12,6 +12,7 @@ import {
   Shield,
   Sparkles,
   Star,
+  UserPlus,
   Wrench,
 } from "lucide-react";
 import { motion } from "motion/react";
@@ -164,7 +165,7 @@ export function LandingPage() {
                   5:00 AM – 10:00 AM · Daily Service
                 </Badge>
               </div>
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-display font-800 leading-[1.02] tracking-tight">
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-display font-extrabold leading-[1.02] tracking-tight">
                 Your car, <span className="text-gradient-blue">spotless</span>
                 <br />
                 every morning.
@@ -229,6 +230,85 @@ export function LandingPage() {
         </div>
       </section>
 
+      {/* How It Works */}
+      <section className="py-32 relative">
+        <div className="max-w-[1400px] mx-auto px-6 sm:px-10 lg:px-16">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={stagger}
+            className="text-center mb-16"
+          >
+            <motion.div variants={fadeUp} className="mb-4">
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase bg-primary/10 text-primary border border-primary/20 px-3 py-1.5 rounded-full">
+                Simple Process
+              </span>
+            </motion.div>
+            <motion.h2
+              variants={fadeUp}
+              className="text-4xl sm:text-5xl font-display font-bold mb-4"
+            >
+              How It Works
+            </motion.h2>
+            <motion.p
+              variants={fadeUp}
+              className="text-muted-foreground text-lg"
+            >
+              Clean car in 3 simple steps
+            </motion.p>
+          </motion.div>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={stagger}
+            className="grid md:grid-cols-3 gap-8"
+          >
+            {[
+              {
+                step: "01",
+                icon: UserPlus,
+                title: "Sign Up",
+                desc: "Register your car and choose your plan. Takes less than 2 minutes.",
+              },
+              {
+                step: "02",
+                icon: Car,
+                title: "Crew Arrives",
+                desc: "Our trained crew arrives at 5 AM, rain or shine. No waiting, no hassle.",
+              },
+              {
+                step: "03",
+                icon: Sparkles,
+                title: "Car is Clean",
+                desc: "Your car is spotless before you start your day. Every single morning.",
+              },
+            ].map(({ step, icon: Icon, title, desc }) => (
+              <motion.div
+                key={step}
+                variants={fadeUp}
+                className="relative p-9 rounded-2xl bg-card border border-border/60 hover:border-primary/40 transition-all hover:-translate-y-1.5 group overflow-hidden"
+              >
+                <span className="absolute -top-4 -right-2 text-9xl font-display font-extrabold text-foreground/5 select-none">
+                  {step}
+                </span>
+                <div className="relative">
+                  <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
+                    <Icon className="w-7 h-7 text-primary" />
+                  </div>
+                  <h3 className="font-display font-bold text-foreground mb-3 text-xl">
+                    {title}
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {desc}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
       {/* ── Waitlist / Noida Launch ──────────────────── */}
       <section className="py-28 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-amber-400/5" />
@@ -251,7 +331,7 @@ export function LandingPage() {
                   Coming Soon to Noida
                 </span>
               </div>
-              <h2 className="text-4xl sm:text-5xl font-display font-800 mb-5 leading-tight">
+              <h2 className="text-4xl sm:text-5xl font-display font-extrabold mb-5 leading-tight">
                 Cleanzo is launching in{" "}
                 <span className="text-gradient-blue">Noida</span>! 🎉
               </h2>
@@ -283,7 +363,7 @@ export function LandingPage() {
                   <div className="w-16 h-16 rounded-full bg-amber-400/15 flex items-center justify-center mx-auto mb-5">
                     <Bell className="w-8 h-8 text-amber-400" />
                   </div>
-                  <h3 className="font-display font-700 text-2xl mb-2">
+                  <h3 className="font-display font-bold text-2xl mb-2">
                     Get Early Access
                   </h3>
                   <p className="text-sm text-muted-foreground mb-7">
@@ -322,7 +402,7 @@ export function LandingPage() {
           >
             <motion.h2
               variants={fadeUp}
-              className="text-4xl sm:text-5xl font-display font-700 mb-4"
+              className="text-4xl sm:text-5xl font-display font-bold mb-4"
             >
               Why choose Cleanzo?
             </motion.h2>
@@ -349,7 +429,7 @@ export function LandingPage() {
                 <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
                   <Icon className="w-7 h-7 text-primary" />
                 </div>
-                <h3 className="font-display font-700 text-foreground mb-3 text-xl">
+                <h3 className="font-display font-bold text-foreground mb-3 text-xl">
                   {title}
                 </h3>
                 <p className="text-muted-foreground leading-relaxed">{desc}</p>
@@ -372,7 +452,7 @@ export function LandingPage() {
           >
             <motion.h2
               variants={fadeUp}
-              className="text-4xl sm:text-5xl font-display font-700 mb-4"
+              className="text-4xl sm:text-5xl font-display font-bold mb-4"
             >
               Simple, transparent pricing
             </motion.h2>
@@ -396,7 +476,7 @@ export function LandingPage() {
               <div className="luxury-card-wrapper">
                 <div className="bg-card rounded-[1.2rem] p-10 h-full">
                   <div className="mb-7">
-                    <h3 className="text-2xl font-display font-700 mb-1">
+                    <h3 className="text-2xl font-display font-bold mb-1">
                       Standard Plan
                     </h3>
                     <p className="text-sm text-muted-foreground">
@@ -404,7 +484,7 @@ export function LandingPage() {
                     </p>
                   </div>
                   <div className="mb-7 flex items-end gap-1">
-                    <span className="text-6xl font-display font-800 text-gradient-gold">
+                    <span className="text-6xl font-display font-extrabold text-gradient-gold">
                       ₹399
                     </span>
                     <span className="text-muted-foreground mb-2">/month</span>
@@ -437,13 +517,8 @@ export function LandingPage() {
             <motion.div variants={fadeUp}>
               <div className="luxury-card-wrapper-featured">
                 <div className="bg-card rounded-[1.2rem] p-10 h-full relative overflow-hidden">
-                  <div className="absolute top-5 right-5">
-                    <span className="inline-flex items-center text-xs font-bold px-3 py-1.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">
-                      Most Popular
-                    </span>
-                  </div>
                   <div className="mb-7">
-                    <h3 className="text-2xl font-display font-700 mb-1">
+                    <h3 className="text-2xl font-display font-bold mb-1">
                       SUV Plan
                     </h3>
                     <p className="text-sm text-muted-foreground">
@@ -451,7 +526,7 @@ export function LandingPage() {
                     </p>
                   </div>
                   <div className="mb-7 flex items-end gap-1">
-                    <span className="text-6xl font-display font-800 text-gradient-gold">
+                    <span className="text-6xl font-display font-extrabold text-gradient-gold">
                       ₹449
                     </span>
                     <span className="text-muted-foreground mb-2">/month</span>
@@ -495,7 +570,7 @@ export function LandingPage() {
           >
             <motion.h2
               variants={fadeUp}
-              className="text-4xl sm:text-5xl font-display font-800 mb-5"
+              className="text-4xl sm:text-5xl font-display font-extrabold mb-5"
             >
               Ready for a spotless morning?
             </motion.h2>

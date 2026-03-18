@@ -36,13 +36,7 @@ interface CrewRegistrationModalProps {
   onSuccess?: () => void;
 }
 
-const ID_TYPES = [
-  "Aadhaar Card",
-  "PAN Card",
-  "Voter ID",
-  "Driving Licence",
-  "Passport",
-];
+const AADHAAR_VOTER_TYPES = ["Aadhaar Card", "Voter ID"];
 
 export function CrewRegistrationModal({
   open,
@@ -55,12 +49,20 @@ export function CrewRegistrationModal({
   const [phone, setPhone] = useState("");
   const [otpMethod, setOtpMethod] = useState<"email" | "phone">("phone");
   const [otpValue, setOtpValue] = useState("");
-  const [idType, setIdType] = useState("");
-  const [idFile, setIdFile] = useState<File | null>(null);
-  const [idPreview, setIdPreview] = useState<string | null>(null);
 
-  const galleryRef = useRef<HTMLInputElement>(null);
-  const cameraRef = useRef<HTMLInputElement>(null);
+  // First ID: Aadhaar or Voter ID
+  const [idType1, setIdType1] = useState("");
+  const [idFile1, setIdFile1] = useState<File | null>(null);
+  const [idPreview1, setIdPreview1] = useState<string | null>(null);
+
+  // Second ID: PAN Card (mandatory)
+  const [idFile2, setIdFile2] = useState<File | null>(null);
+  const [idPreview2, setIdPreview2] = useState<string | null>(null);
+
+  const gallery1Ref = useRef<HTMLInputElement>(null);
+  const camera1Ref = useRef<HTMLInputElement>(null);
+  const gallery2Ref = useRef<HTMLInputElement>(null);
+  const camera2Ref = useRef<HTMLInputElement>(null);
 
   const { mutateAsync: registerCrewMember, isPending } =
     useRegisterCrewMember();
@@ -72,9 +74,11 @@ export function CrewRegistrationModal({
     setPhone("");
     setOtpMethod("phone");
     setOtpValue("");
-    setIdType("");
-    setIdFile(null);
-    setIdPreview(null);
+    setIdType1("");
+    setIdFile1(null);
+    setIdPreview1(null);
+    setIdFile2(null);
+    setIdPreview2(null);
   };
 
   const handleClose = (val: boolean) => {
@@ -104,21 +108,33 @@ export function CrewRegistrationModal({
     setStep(3);
   };
 
-  const handleFileChange = (file: File | null) => {
+  const handleFileChange1 = (file: File | null) => {
     if (!file) return;
-    setIdFile(file);
+    setIdFile1(file);
     const reader = new FileReader();
-    reader.onload = (e) => setIdPreview(e.target?.result as string);
+    reader.onload = (e) => setIdPreview1(e.target?.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  const handleFileChange2 = (file: File | null) => {
+    if (!file) return;
+    setIdFile2(file);
+    const reader = new FileReader();
+    reader.onload = (e) => setIdPreview2(e.target?.result as string);
     reader.readAsDataURL(file);
   };
 
   const handleSubmit = async () => {
-    if (!idType || !idFile) {
-      toast.error("Please select an ID type and upload a photo.");
+    if (!idType1 || !idFile1) {
+      toast.error("Please select and upload your Aadhaar Card or Voter ID.");
+      return;
+    }
+    if (!idFile2) {
+      toast.error("Please upload your PAN Card. It is mandatory.");
       return;
     }
     try {
-      await registerCrewMember({ name, phone });
+      await registerCrewMember({ name, email, phone });
       toast.success("Application submitted! You'll be notified once approved.");
       handleClose(false);
       onSuccess?.();
@@ -132,7 +148,7 @@ export function CrewRegistrationModal({
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent
-        className="sm:max-w-md"
+        className="sm:max-w-md max-h-[90vh] overflow-y-auto"
         data-ocid="crew_registration.dialog"
       >
         <DialogHeader>
@@ -320,7 +336,9 @@ export function CrewRegistrationModal({
               type="button"
               onClick={() => {
                 toast.success(
-                  `OTP resent to your ${otpMethod === "email" ? "email" : "phone"}.`,
+                  `OTP resent to your ${
+                    otpMethod === "email" ? "email" : "phone"
+                  }.`,
                 );
               }}
               className="text-sm text-primary hover:underline"
@@ -352,87 +370,151 @@ export function CrewRegistrationModal({
           </div>
         )}
 
-        {/* Step 3: Upload ID Proof */}
+        {/* Step 3: Upload ID Proofs */}
         {step === 3 && (
-          <div className="space-y-4">
+          <div className="space-y-5">
             <div className="text-center">
               <ShieldCheck className="w-8 h-8 text-primary mx-auto mb-2" />
-              <h3 className="font-display font-700 text-base">
+              <h3 className="font-display font-bold text-base">
                 Identity Verification
               </h3>
               <p className="text-xs text-muted-foreground mt-1">
-                We require one government-issued ID for verification. Your data
+                We require two government-issued IDs for verification. Your data
                 is kept private and secure.
               </p>
             </div>
 
-            <div className="space-y-1.5">
-              <Label>Select ID Type</Label>
-              <Select value={idType} onValueChange={setIdType}>
+            {/* ID 1: Aadhaar or Voter ID */}
+            <div className="rounded-xl border border-border p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">
+                  1
+                </div>
+                <Label className="font-semibold">Aadhaar Card / Voter ID</Label>
+                <span className="text-xs text-destructive font-medium">
+                  Required
+                </span>
+              </div>
+              <Select value={idType1} onValueChange={setIdType1}>
                 <SelectTrigger data-ocid="crew_registration.select">
-                  <SelectValue placeholder="Choose ID document" />
+                  <SelectValue placeholder="Choose document type" />
                 </SelectTrigger>
                 <SelectContent>
-                  {ID_TYPES.map((t) => (
+                  {AADHAAR_VOTER_TYPES.map((t) => (
                     <SelectItem key={t} value={t}>
                       {t}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Upload ID Photo</Label>
               <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
-                  onClick={() => galleryRef.current?.click()}
-                  className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-dashed border-border hover:border-primary hover:bg-primary/5 transition-colors text-sm font-medium text-muted-foreground"
+                  onClick={() => gallery1Ref.current?.click()}
+                  className="flex flex-col items-center gap-2 p-3 rounded-xl border-2 border-dashed border-border hover:border-primary hover:bg-primary/5 transition-colors text-sm font-medium text-muted-foreground"
                   data-ocid="crew_registration.upload_button"
                 >
-                  <ImagePlus className="w-6 h-6" />
-                  Upload from Gallery
+                  <ImagePlus className="w-5 h-5" />
+                  Gallery
                 </button>
                 <button
                   type="button"
-                  onClick={() => cameraRef.current?.click()}
-                  className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-dashed border-border hover:border-primary hover:bg-primary/5 transition-colors text-sm font-medium text-muted-foreground"
+                  onClick={() => camera1Ref.current?.click()}
+                  className="flex flex-col items-center gap-2 p-3 rounded-xl border-2 border-dashed border-border hover:border-primary hover:bg-primary/5 transition-colors text-sm font-medium text-muted-foreground"
                   data-ocid="crew_registration.upload_button"
                 >
-                  <Camera className="w-6 h-6" />
-                  Take Photo
+                  <Camera className="w-5 h-5" />
+                  Camera
                 </button>
               </div>
               <input
-                ref={galleryRef}
+                ref={gallery1Ref}
                 type="file"
                 accept="image/*"
                 className="hidden"
-                onChange={(e) => handleFileChange(e.target.files?.[0] ?? null)}
+                onChange={(e) => handleFileChange1(e.target.files?.[0] ?? null)}
               />
               <input
-                ref={cameraRef}
+                ref={camera1Ref}
                 type="file"
                 accept="image/*"
                 capture="environment"
                 className="hidden"
-                onChange={(e) => handleFileChange(e.target.files?.[0] ?? null)}
+                onChange={(e) => handleFileChange1(e.target.files?.[0] ?? null)}
               />
+              {idPreview1 && (
+                <div className="relative">
+                  <img
+                    src={idPreview1}
+                    alt="ID 1 Preview"
+                    className="w-full h-28 object-cover rounded-xl border border-border"
+                  />
+                  <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1">
+                    <CheckCircle2 className="w-3 h-3" />
+                  </div>
+                </div>
+              )}
             </div>
 
-            {idPreview && (
-              <div className="relative">
-                <img
-                  src={idPreview}
-                  alt="ID Preview"
-                  className="w-full h-32 object-cover rounded-xl border border-border"
-                />
-                <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1">
-                  <CheckCircle2 className="w-3 h-3" />
+            {/* ID 2: PAN Card */}
+            <div className="rounded-xl border border-border p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">
+                  2
                 </div>
+                <Label className="font-semibold">PAN Card</Label>
+                <span className="text-xs text-destructive font-medium">
+                  Required
+                </span>
               </div>
-            )}
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => gallery2Ref.current?.click()}
+                  className="flex flex-col items-center gap-2 p-3 rounded-xl border-2 border-dashed border-border hover:border-primary hover:bg-primary/5 transition-colors text-sm font-medium text-muted-foreground"
+                  data-ocid="crew_registration.upload_button"
+                >
+                  <ImagePlus className="w-5 h-5" />
+                  Gallery
+                </button>
+                <button
+                  type="button"
+                  onClick={() => camera2Ref.current?.click()}
+                  className="flex flex-col items-center gap-2 p-3 rounded-xl border-2 border-dashed border-border hover:border-primary hover:bg-primary/5 transition-colors text-sm font-medium text-muted-foreground"
+                  data-ocid="crew_registration.upload_button"
+                >
+                  <Camera className="w-5 h-5" />
+                  Camera
+                </button>
+              </div>
+              <input
+                ref={gallery2Ref}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => handleFileChange2(e.target.files?.[0] ?? null)}
+              />
+              <input
+                ref={camera2Ref}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={(e) => handleFileChange2(e.target.files?.[0] ?? null)}
+              />
+              {idPreview2 && (
+                <div className="relative">
+                  <img
+                    src={idPreview2}
+                    alt="PAN Card Preview"
+                    className="w-full h-28 object-cover rounded-xl border border-border"
+                  />
+                  <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1">
+                    <CheckCircle2 className="w-3 h-3" />
+                  </div>
+                </div>
+              )}
+            </div>
 
             <div className="flex gap-3 pt-1">
               <Button

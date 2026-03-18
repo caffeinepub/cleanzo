@@ -199,14 +199,83 @@ export function useRegisterCrewMember() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (data: { name: string; phone: string }) => {
+    mutationFn: async (data: {
+      name: string;
+      email: string;
+      phone: string;
+    }) => {
       if (!actor) throw new Error("Not connected");
-      await actor.registerCrewMember(data.name, data.phone);
+      await actor.registerCrewMember(data.name, data.email, data.phone);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["crewMemberProfile"] });
       queryClient.invalidateQueries({ queryKey: ["userRole"] });
       queryClient.invalidateQueries({ queryKey: ["allCrewMembers"] });
+    },
+  });
+}
+
+export function useApproveCrewMember() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (crewMemberId: Principal) => {
+      if (!actor) throw new Error("Not connected");
+      await actor.approveCrewMember(crewMemberId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["allCrewMembers"] });
+      queryClient.invalidateQueries({ queryKey: ["activeCrewMembers"] });
+    },
+  });
+}
+
+export function useRejectCrewMember() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (crewMemberId: Principal) => {
+      if (!actor) throw new Error("Not connected");
+      await actor.rejectCrewMember(crewMemberId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["allCrewMembers"] });
+    },
+  });
+}
+
+export function useGetWaitlistEntries() {
+  const { actor, isFetching } = useActor();
+  return useQuery({
+    queryKey: ["waitlistEntries"],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getWaitlistEntries();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useSubmitWaitlist() {
+  const { actor } = useActor();
+  return useMutation({
+    mutationFn: async (data: {
+      name: string;
+      email: string;
+      phone: string;
+      carModel: string;
+      sectorSociety: string;
+      carsInFamily: bigint;
+    }) => {
+      if (!actor) throw new Error("Not connected");
+      await actor.submitWaitlist(
+        data.name,
+        data.email,
+        data.phone,
+        data.carModel,
+        data.sectorSociety,
+        data.carsInFamily,
+      );
     },
   });
 }
@@ -283,6 +352,167 @@ export function useUpdateAssignmentStatus() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["dailySchedule"] });
       queryClient.invalidateQueries({ queryKey: ["crewAssignments"] });
+    },
+  });
+}
+
+// ── Attendance hooks ──────────────────────────────────────────
+
+export function useAttendanceLogs(crewMemberId?: Principal) {
+  const { actor, isFetching } = useActor();
+  return useQuery({
+    queryKey: ["attendanceLogs", crewMemberId?.toString()],
+    queryFn: async () => {
+      if (!actor || !crewMemberId) return [];
+      return actor.getAttendanceLogs(crewMemberId);
+    },
+    enabled: !!actor && !isFetching && !!crewMemberId,
+  });
+}
+
+export function useWeeklyHoursSummary(
+  crewMemberId?: Principal,
+  weekStart?: string,
+) {
+  const { actor, isFetching } = useActor();
+  return useQuery({
+    queryKey: ["weeklyHoursSummary", crewMemberId?.toString(), weekStart],
+    queryFn: async () => {
+      if (!actor || !crewMemberId || !weekStart) return null;
+      return actor.getWeeklyHoursSummary(crewMemberId, weekStart);
+    },
+    enabled: !!actor && !isFetching && !!crewMemberId && !!weekStart,
+  });
+}
+
+export function usePayReleaseHistory(crewMemberId?: Principal) {
+  const { actor, isFetching } = useActor();
+  return useQuery({
+    queryKey: ["payReleaseHistory", crewMemberId?.toString()],
+    queryFn: async () => {
+      if (!actor || !crewMemberId) return [];
+      return actor.getPayReleaseHistory(crewMemberId);
+    },
+    enabled: !!actor && !isFetching && !!crewMemberId,
+  });
+}
+
+export function useClockIn() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (date: string) => {
+      if (!actor) throw new Error("Not connected");
+      await actor.clockIn(date);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["attendanceLogs"] });
+    },
+  });
+}
+
+export function useClockOut() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (date: string) => {
+      if (!actor) throw new Error("Not connected");
+      await actor.clockOut(date);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["attendanceLogs"] });
+    },
+  });
+}
+
+export function useReleaseWeeklyPayment() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: {
+      crewMemberId: Principal;
+      weekStart: string;
+      amount: bigint;
+      totalHours: number;
+    }) => {
+      if (!actor) throw new Error("Not connected");
+      await actor.releaseWeeklyPayment(
+        data.crewMemberId,
+        data.weekStart,
+        data.amount,
+        data.totalHours,
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["payReleaseHistory"] });
+      queryClient.invalidateQueries({ queryKey: ["weeklyHoursSummary"] });
+    },
+  });
+}
+
+// ── Service photo hooks ──────────────────────────────────────
+
+export function useServicePhotosForCarOwner(carOwnerId?: Principal) {
+  const { actor, isFetching } = useActor();
+  return useQuery({
+    queryKey: ["servicePhotosForCarOwner", carOwnerId?.toString()],
+    queryFn: async () => {
+      if (!actor || !carOwnerId) return [];
+      return actor.getServicePhotosForCarOwner(carOwnerId);
+    },
+    enabled: !!actor && !isFetching && !!carOwnerId,
+  });
+}
+
+export function useSaveServicePhoto() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: {
+      carOwnerId: Principal;
+      date: string;
+      beforePhotoId: string;
+      afterPhotoId: string;
+    }) => {
+      if (!actor) throw new Error("Not connected");
+      await actor.saveServicePhoto(
+        data.carOwnerId,
+        data.date,
+        data.beforePhotoId,
+        data.afterPhotoId,
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["servicePhotosForCarOwner"] });
+    },
+  });
+}
+
+// ── Notification hooks ────────────────────────────────────────
+
+export function useNotifications() {
+  const { actor, isFetching } = useActor();
+  return useQuery({
+    queryKey: ["notifications"],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getNotifications();
+    },
+    enabled: !!actor && !isFetching,
+    refetchInterval: 30000,
+  });
+}
+
+export function useMarkNotificationAsRead() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (notificationId: string) => {
+      if (!actor) throw new Error("Not connected");
+      await actor.markNotificationAsRead(notificationId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
   });
 }

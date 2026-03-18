@@ -10,6 +10,9 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export type ApprovalStatus = { 'pending' : null } |
+  { 'approved' : null } |
+  { 'rejected' : null };
 export interface Assignment {
   'status' : AssignmentStatus,
   'date' : string,
@@ -19,6 +22,12 @@ export interface Assignment {
 export type AssignmentStatus = { 'pending' : null } |
   { 'skipped' : null } |
   { 'done' : null };
+export interface AttendanceRecord {
+  'date' : string,
+  'hoursWorked' : [] | [number],
+  'clockOut' : [] | [bigint],
+  'clockIn' : bigint,
+}
 export interface CarOwnerProfile {
   'carModel' : string,
   'name' : string,
@@ -37,7 +46,23 @@ export type CarType = { 'SUV' : null } |
 export interface CrewMemberProfile {
   'name' : string,
   'isActive' : boolean,
+  'email' : string,
+  'approvalStatus' : ApprovalStatus,
   'phone' : string,
+}
+export interface Notification {
+  'id' : string,
+  'userId' : Principal,
+  'read' : boolean,
+  'message' : string,
+  'timestamp' : bigint,
+}
+export interface PayRelease {
+  'totalHours' : number,
+  'crewMemberId' : Principal,
+  'releasedAt' : bigint,
+  'amount' : bigint,
+  'weekStart' : string,
 }
 export interface PaymentRecord {
   'status' : string,
@@ -46,14 +71,14 @@ export interface PaymentRecord {
   'sessionId' : string,
   'amount' : bigint,
 }
-export interface WaitlistEntry {
-  'name' : string,
-  'email' : string,
-  'phone' : string,
-  'carModel' : string,
-  'sectorSociety' : string,
-  'carsInFamily' : bigint,
-  'submittedAt' : bigint,
+export interface ServicePhoto {
+  'id' : string,
+  'date' : string,
+  'crewMemberId' : Principal,
+  'beforePhotoId' : string,
+  'carOwnerId' : Principal,
+  'afterPhotoId' : string,
+  'uploadedAt' : bigint,
 }
 export interface ShoppingItem {
   'productName' : string,
@@ -79,9 +104,36 @@ export interface TransformationOutput {
   'body' : Uint8Array,
   'headers' : Array<http_header>,
 }
+export interface UserProfile { 'name' : string }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
+export interface WaitlistEntry {
+  'carModel' : string,
+  'name' : string,
+  'sectorSociety' : string,
+  'submittedAt' : bigint,
+  'email' : string,
+  'phone' : string,
+  'carsInFamily' : bigint,
+}
+export interface WeeklyPaySummary {
+  'records' : Array<AttendanceRecord>,
+  'totalHours' : number,
+  'crewMemberId' : Principal,
+  'weekStart' : string,
+}
+export interface _CaffeineStorageCreateCertificateResult {
+  'method' : string,
+  'blob_hash' : string,
+}
+export interface _CaffeineStorageRefillInformation {
+  'proposed_top_up_amount' : [] | [bigint],
+}
+export interface _CaffeineStorageRefillResult {
+  'success' : [] | [boolean],
+  'topped_up_amount' : [] | [bigint],
+}
 export interface http_header { 'value' : string, 'name' : string }
 export interface http_request_result {
   'status' : bigint,
@@ -89,16 +141,34 @@ export interface http_request_result {
   'headers' : Array<http_header>,
 }
 export interface _SERVICE {
+  '_caffeineStorageBlobIsLive' : ActorMethod<[Uint8Array], boolean>,
+  '_caffeineStorageBlobsToDelete' : ActorMethod<[], Array<Uint8Array>>,
+  '_caffeineStorageConfirmBlobDeletion' : ActorMethod<
+    [Array<Uint8Array>],
+    undefined
+  >,
+  '_caffeineStorageCreateCertificate' : ActorMethod<
+    [string],
+    _CaffeineStorageCreateCertificateResult
+  >,
+  '_caffeineStorageRefillCashier' : ActorMethod<
+    [[] | [_CaffeineStorageRefillInformation]],
+    _CaffeineStorageRefillResult
+  >,
+  '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'addBulkAssignments' : ActorMethod<
     [Array<[Principal, Principal]>],
     undefined
   >,
+  'approveCrewMember' : ActorMethod<[Principal], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'assignCarOwnerToCrewMember' : ActorMethod<
     [Principal, Principal, string],
     undefined
   >,
+  'clockIn' : ActorMethod<[string], undefined>,
+  'clockOut' : ActorMethod<[string], undefined>,
   'createCheckoutSession' : ActorMethod<
     [Array<ShoppingItem>, string, string],
     string
@@ -117,28 +187,57 @@ export interface _SERVICE {
     [Principal, string],
     Array<Assignment>
   >,
+  'getAttendanceLogs' : ActorMethod<[Principal], Array<AttendanceRecord>>,
+  'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getCarOwnerProfile' : ActorMethod<[Principal], CarOwnerProfile>,
   'getCrewMemberProfile' : ActorMethod<[Principal], CrewMemberProfile>,
   'getDailySchedule' : ActorMethod<[string], Array<Assignment>>,
+  'getNotifications' : ActorMethod<[], Array<Notification>>,
+  'getPayReleaseHistory' : ActorMethod<[Principal], Array<PayRelease>>,
   'getPaymentHistory' : ActorMethod<[Principal], Array<PaymentRecord>>,
   'getScheduleForUser' : ActorMethod<[Principal], Array<Assignment>>,
+  'getServicePhoto' : ActorMethod<
+    [Principal, Principal, string],
+    [] | [ServicePhoto]
+  >,
+  'getServicePhotosForCarOwner' : ActorMethod<[Principal], Array<ServicePhoto>>,
+  'getServicePhotosForCrewMember' : ActorMethod<
+    [Principal],
+    Array<ServicePhoto>
+  >,
   'getSkipDays' : ActorMethod<[Principal], Array<string>>,
   'getStripeSessionStatus' : ActorMethod<[string], StripeSessionStatus>,
+  'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'getWaitlistCount' : ActorMethod<[], bigint>,
   'getWaitlistEntries' : ActorMethod<[], Array<WaitlistEntry>>,
+  'getWeeklyHoursSummary' : ActorMethod<[Principal, string], WeeklyPaySummary>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'isStripeConfigured' : ActorMethod<[], boolean>,
   'markAssignmentDone' : ActorMethod<[Principal, string], undefined>,
+  'markNotificationAsRead' : ActorMethod<[string], undefined>,
   'recordPayment' : ActorMethod<[Principal, bigint, string, string], undefined>,
   'registerCarOwner' : ActorMethod<
     [string, string, string, string, string, CarType],
     undefined
   >,
-  'registerCrewMember' : ActorMethod<[string, string], undefined>,
+  'registerCrewMember' : ActorMethod<[string, string, string], undefined>,
+  'rejectCrewMember' : ActorMethod<[Principal], undefined>,
+  'releaseWeeklyPayment' : ActorMethod<
+    [Principal, string, bigint, number],
+    undefined
+  >,
+  'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'saveServicePhoto' : ActorMethod<
+    [Principal, string, string, string],
+    undefined
+  >,
   'setStripeConfiguration' : ActorMethod<[StripeConfiguration], undefined>,
   'skipDay' : ActorMethod<[string], undefined>,
-  'submitWaitlist' : ActorMethod<[string, string, string, string, string, bigint], undefined>,
+  'submitWaitlist' : ActorMethod<
+    [string, string, string, string, string, bigint],
+    undefined
+  >,
   'transform' : ActorMethod<[TransformationInput], TransformationOutput>,
   'updateAssignmentStatus' : ActorMethod<
     [Principal, string, AssignmentStatus],

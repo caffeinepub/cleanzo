@@ -192,7 +192,7 @@ export function CarOwnerRegistrationModal({
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {carType === CarType.SUV
-                      ? "Premium plan for large SUVs"
+                      ? "Standard Plan (SUV)"
                       : "Standard plan for hatchbacks, sedans & mid-SUVs"}
                   </p>
                 </div>

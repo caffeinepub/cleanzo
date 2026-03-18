@@ -17,6 +17,8 @@ import {
 } from "@/components/ui/select";
 import { CheckCircle2, Loader2, MapPin } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
+import { useSubmitWaitlist } from "../hooks/useQueries";
 
 const INDIAN_CAR_MODELS = [
   // Maruti Suzuki
@@ -249,9 +251,11 @@ export function WaitlistModal({ open, onOpenChange }: WaitlistModalProps) {
     sectorSociety: "",
     carCount: "",
   });
-  const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Partial<FormData>>({});
+
+  const { mutateAsync: submitWaitlist, isPending: submitting } =
+    useSubmitWaitlist();
 
   const validate = () => {
     const e: Partial<FormData> = {};
@@ -276,11 +280,19 @@ export function WaitlistModal({ open, onOpenChange }: WaitlistModalProps) {
       setErrors(errs);
       return;
     }
-    setSubmitting(true);
-    // Simulate submission (backend integration can be wired later)
-    await new Promise((r) => setTimeout(r, 1200));
-    setSubmitting(false);
-    setSubmitted(true);
+    try {
+      await submitWaitlist({
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        carModel: form.carModel,
+        sectorSociety: form.sectorSociety,
+        carsInFamily: BigInt(Number(form.carCount) || 0),
+      });
+      setSubmitted(true);
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+    }
   };
 
   const handleClose = (val: boolean) => {
@@ -308,7 +320,7 @@ export function WaitlistModal({ open, onOpenChange }: WaitlistModalProps) {
               <CheckCircle2 className="w-8 h-8 text-primary" />
             </div>
             <div>
-              <h3 className="text-2xl font-display font-700 mb-2">
+              <h3 className="text-2xl font-display font-bold mb-2">
                 You're on the list!
               </h3>
               <p className="text-muted-foreground">
@@ -329,7 +341,7 @@ export function WaitlistModal({ open, onOpenChange }: WaitlistModalProps) {
             <DialogHeader>
               <div className="flex items-center gap-2 mb-1">
                 <MapPin className="w-5 h-5 text-primary" />
-                <DialogTitle className="text-xl font-display font-700">
+                <DialogTitle className="text-xl font-display font-bold">
                   Join the Waitlist for Noida
                 </DialogTitle>
               </div>
@@ -474,7 +486,7 @@ export function WaitlistModal({ open, onOpenChange }: WaitlistModalProps) {
                     <SelectItem value="1">1 car</SelectItem>
                     <SelectItem value="2">2 cars</SelectItem>
                     <SelectItem value="3">3 cars</SelectItem>
-                    <SelectItem value="4+">4 or more</SelectItem>
+                    <SelectItem value="4">4 or more</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

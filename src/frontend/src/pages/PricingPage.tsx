@@ -123,7 +123,7 @@ export function PricingPage() {
             </motion.p>
             <motion.h1
               variants={fadeUp}
-              className="text-5xl sm:text-6xl lg:text-7xl font-display font-800 leading-tight mb-7"
+              className="text-5xl sm:text-6xl lg:text-7xl font-display font-extrabold leading-tight mb-7"
             >
               Simple, <span className="text-gradient-blue">transparent</span>{" "}
               pricing
@@ -153,7 +153,7 @@ export function PricingPage() {
               <div className="luxury-card-wrapper h-full">
                 <div className="bg-card rounded-[1.2rem] p-10 h-full flex flex-col">
                   <div className="mb-9">
-                    <h2 className="text-2xl font-display font-700 mb-1">
+                    <h2 className="text-2xl font-display font-bold mb-1">
                       Standard Plan
                     </h2>
                     <p className="text-sm text-muted-foreground">
@@ -161,7 +161,7 @@ export function PricingPage() {
                     </p>
                   </div>
                   <div className="mb-9 flex items-end gap-1">
-                    <span className="text-7xl font-display font-800 text-gradient-gold">
+                    <span className="text-7xl font-display font-extrabold text-gradient-gold">
                       &#8377;399
                     </span>
                     <span className="text-muted-foreground text-lg mb-2">
@@ -226,7 +226,7 @@ export function PricingPage() {
                     }}
                   />
                   <div className="mb-9">
-                    <h2 className="text-2xl font-display font-700 mb-1">
+                    <h2 className="text-2xl font-display font-bold mb-1">
                       SUV Plan
                     </h2>
                     <p className="text-sm text-muted-foreground">
@@ -234,7 +234,7 @@ export function PricingPage() {
                     </p>
                   </div>
                   <div className="mb-9 flex items-end gap-1">
-                    <span className="text-7xl font-display font-800 text-gradient-gold">
+                    <span className="text-7xl font-display font-extrabold text-gradient-gold">
                       &#8377;449
                     </span>
                     <span className="text-muted-foreground text-lg mb-2">
@@ -327,7 +327,7 @@ export function PricingPage() {
             variants={stagger}
           >
             <motion.div variants={fadeUp} className="text-center mb-14">
-              <h2 className="text-4xl font-display font-700">
+              <h2 className="text-4xl font-display font-bold">
                 Frequently asked questions
               </h2>
             </motion.div>

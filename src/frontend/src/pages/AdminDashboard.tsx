@@ -19,20 +19,25 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Link } from "@tanstack/react-router";
-import { format } from "date-fns";
+import type { Principal } from "@icp-sdk/core/principal";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { format, parseISO, startOfWeek } from "date-fns";
 import {
   AlertCircle,
   Bell,
   CalendarDays,
   Car,
   CheckCircle2,
+  ChevronDown,
+  ChevronRight,
   Clock,
+  DollarSign,
   Droplets,
   Info,
   Loader2,
   LogOut,
   SkipForward,
+  Timer,
   UserCheck,
   Users,
   XCircle,
@@ -40,7 +45,8 @@ import {
 import { motion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { CarType } from "../backend";
+import { ApprovalStatus, CarType } from "../backend";
+import type { CrewMemberProfile } from "../backend";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import {
   AssignmentStatus,
@@ -48,8 +54,14 @@ import {
   useActiveCrewMembers,
   useAllCarOwners,
   useAllCrewMembers,
+  useApproveCrewMember,
   useAssignCarOwnerToCrewMember,
+  useAttendanceLogs,
   useDailySchedule,
+  useGetWaitlistEntries,
+  useRejectCrewMember,
+  useReleaseWeeklyPayment,
+  useWeeklyHoursSummary,
 } from "../hooks/useQueries";
 
 const CAR_TYPE_LABELS: Record<CarType, string> = {
@@ -77,8 +89,205 @@ const statusConfig = {
   },
 };
 
+function formatNsTime(ns: bigint): string {
+  return format(new Date(Number(ns) / 1_000_000), "hh:mm a");
+}
+
+function CrewAttendanceRow({
+  crewPrincipal,
+  crewProfile,
+  index,
+}: {
+  crewPrincipal: Principal;
+  crewProfile: CrewMemberProfile;
+  index: number;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const [weekStart, setWeekStart] = useState(
+    format(startOfWeek(new Date(), { weekStartsOn: 1 }), "yyyy-MM-dd"),
+  );
+  const [payAmount, setPayAmount] = useState("");
+
+  const { data: logs = [], isLoading: logsLoading } = useAttendanceLogs(
+    expanded ? crewPrincipal : undefined,
+  );
+  const { data: weeklySummary } = useWeeklyHoursSummary(
+    expanded ? crewPrincipal : undefined,
+    weekStart,
+  );
+  const { mutateAsync: releasePayment, isPending: isReleasing } =
+    useReleaseWeeklyPayment();
+
+  const handleRelease = async () => {
+    const amount = Number.parseFloat(payAmount);
+    if (!amount || amount <= 0) {
+      toast.error("Enter a valid payment amount.");
+      return;
+    }
+    const totalHours = weeklySummary?.totalHours ?? 0;
+    try {
+      await releasePayment({
+        crewMemberId: crewPrincipal,
+        weekStart,
+        amount: BigInt(Math.round(amount * 100)),
+        totalHours,
+      });
+      toast.success(`Payment of ₹${amount} released for ${crewProfile.name}`);
+      setPayAmount("");
+    } catch {
+      toast.error("Failed to release payment.");
+    }
+  };
+
+  return (
+    <div
+      className="border border-border rounded-xl overflow-hidden"
+      data-ocid={`admin.attendance.row.${index + 1}`}
+    >
+      <button
+        type="button"
+        className="w-full flex items-center justify-between p-4 hover:bg-secondary/40 transition-colors"
+        onClick={() => setExpanded((v) => !v)}
+        data-ocid={`admin.attendance.toggle.${index + 1}`}
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+            <Timer className="w-4 h-4 text-primary" />
+          </div>
+          <div className="text-left">
+            <p className="text-sm font-semibold text-foreground">
+              {crewProfile.name}
+            </p>
+            <p className="text-xs text-muted-foreground">{crewProfile.phone}</p>
+          </div>
+        </div>
+        {expanded ? (
+          <ChevronDown className="w-4 h-4 text-muted-foreground" />
+        ) : (
+          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+        )}
+      </button>
+
+      {expanded && (
+        <div className="border-t border-border p-5 space-y-5 bg-secondary/20">
+          {/* Attendance logs */}
+          <div>
+            <h4 className="text-sm font-semibold mb-3">Attendance Logs</h4>
+            {logsLoading ? (
+              <Skeleton className="h-20 w-full" />
+            ) : logs.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                No attendance records found.
+              </p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Clock In</TableHead>
+                    <TableHead>Clock Out</TableHead>
+                    <TableHead>Hours</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {logs.slice(0, 14).map((log, i) => (
+                    <TableRow key={`${log.date}-${i}`}>
+                      <TableCell className="text-sm">{log.date}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {log.clockIn ? formatNsTime(log.clockIn) : "--"}
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {log.clockOut ? formatNsTime(log.clockOut) : "--"}
+                      </TableCell>
+                      <TableCell>
+                        {log.hoursWorked !== undefined ? (
+                          <Badge className="bg-green-900/30 text-green-300 text-xs">
+                            {log.hoursWorked.toFixed(1)}h
+                          </Badge>
+                        ) : (
+                          <span className="text-muted-foreground text-sm">
+                            --
+                          </span>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </div>
+
+          {/* Release pay form */}
+          <div className="p-4 rounded-xl bg-card border border-border">
+            <h4 className="text-sm font-semibold mb-4 flex items-center gap-2">
+              <DollarSign className="w-4 h-4 text-green-500" />
+              Release Weekly Payment
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="space-y-1">
+                <Label className="text-xs">Week Starting</Label>
+                <Input
+                  type="date"
+                  value={weekStart}
+                  onChange={(e) => setWeekStart(e.target.value)}
+                  className="h-8 text-sm"
+                  data-ocid={`admin.pay.input.${index + 1}`}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">
+                  Total Hours
+                  {weeklySummary && (
+                    <span className="text-muted-foreground ml-1">
+                      (auto: {weeklySummary.totalHours.toFixed(1)}h)
+                    </span>
+                  )}
+                </Label>
+                <Input
+                  type="number"
+                  placeholder={weeklySummary?.totalHours.toFixed(1) ?? "0"}
+                  className="h-8 text-sm"
+                  readOnly
+                  value={weeklySummary?.totalHours.toFixed(1) ?? ""}
+                  data-ocid={`admin.pay.hours.${index + 1}`}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Amount (&#8377;)</Label>
+                <Input
+                  type="number"
+                  placeholder="e.g. 2000"
+                  value={payAmount}
+                  onChange={(e) => setPayAmount(e.target.value)}
+                  className="h-8 text-sm"
+                  data-ocid={`admin.pay.amount.${index + 1}`}
+                />
+              </div>
+            </div>
+            <Button
+              size="sm"
+              className="mt-3 bg-green-600 hover:bg-green-700 text-white text-xs"
+              onClick={handleRelease}
+              disabled={isReleasing || !payAmount}
+              data-ocid={`admin.pay.submit_button.${index + 1}`}
+            >
+              {isReleasing ? (
+                <Loader2 className="w-3 h-3 animate-spin mr-1" />
+              ) : (
+                <DollarSign className="w-3 h-3 mr-1" />
+              )}
+              Release Payment
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function AdminDashboard() {
   const { clear, identity } = useInternetIdentity();
+  const navigate = useNavigate();
   const principal = identity?.getPrincipal().toString();
   const [scheduleDate, setScheduleDate] = useState(
     format(new Date(), "yyyy-MM-dd"),
@@ -97,8 +306,12 @@ export function AdminDashboard() {
     useDailySchedule(scheduleDate);
   const { data: activeOwnersData } = useActiveCarOwners();
   const { data: activeCrewData } = useActiveCrewMembers();
+  const { data: waitlistEntries = [], isLoading: waitlistLoading } =
+    useGetWaitlistEntries();
   const { mutateAsync: assignOwner, isPending: isAssigning } =
     useAssignCarOwnerToCrewMember();
+  const { mutateAsync: approveCrew } = useApproveCrewMember();
+  const { mutateAsync: rejectCrew } = useRejectCrewMember();
 
   const activeOwners = activeOwnersData?.[0] ?? [];
   const activeCrew = activeCrewData?.[0] ?? [];
@@ -109,6 +322,9 @@ export function AdminDashboard() {
   const inactiveOwnersCount = allCarOwners.length - activeOwnersCount;
   const activeCrewCount = allCrewMembers.filter((m) => m.isActive).length;
   const inactiveCrewCount = allCrewMembers.length - activeCrewCount;
+  const pendingCrewCount = allCrewMembers.filter(
+    (m) => m.approvalStatus === ApprovalStatus.pending,
+  ).length;
 
   const handleAssign = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -135,6 +351,34 @@ export function AdminDashboard() {
     }
   };
 
+  const handleApprove = async (
+    crewEntry: [
+      import("@icp-sdk/core/principal").Principal,
+      import("../backend").CrewMemberProfile,
+    ],
+  ) => {
+    try {
+      await approveCrew(crewEntry[0]);
+      toast.success(`${crewEntry[1].name} has been approved.`);
+    } catch {
+      toast.error("Failed to approve crew member.");
+    }
+  };
+
+  const handleReject = async (
+    crewEntry: [
+      import("@icp-sdk/core/principal").Principal,
+      import("../backend").CrewMemberProfile,
+    ],
+  ) => {
+    try {
+      await rejectCrew(crewEntry[0]);
+      toast.success(`${crewEntry[1].name} has been rejected.`);
+    } catch {
+      toast.error("Failed to reject crew member.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-50 glass border-b border-border/60">
@@ -143,7 +387,7 @@ export function AdminDashboard() {
             <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
               <Droplets className="w-3.5 h-3.5 text-primary-foreground" />
             </div>
-            <span className="font-display font-700 text-base">Cleanzo</span>
+            <span className="font-display font-bold text-base">Cleanzo</span>
           </Link>
           <div className="flex items-center gap-3">
             <Badge className="bg-amber-400/15 text-amber-300 border-amber-400/30">
@@ -152,7 +396,10 @@ export function AdminDashboard() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={clear}
+              onClick={async () => {
+                await clear();
+                navigate({ to: "/" });
+              }}
               className="text-muted-foreground"
               data-ocid="nav.button"
             >
@@ -221,7 +468,7 @@ export function AdminDashboard() {
               className="bg-card rounded-2xl p-5 border border-border"
             >
               <Icon className={`w-5 h-5 ${color} mb-2`} />
-              <p className="text-3xl font-display font-800 text-foreground">
+              <p className="text-3xl font-display font-extrabold text-foreground">
                 {value}
               </p>
               <p className="text-xs text-muted-foreground">{label}</p>
@@ -236,6 +483,14 @@ export function AdminDashboard() {
             </TabsTrigger>
             <TabsTrigger value="crew" data-ocid="admin.tab">
               Crew Members
+              {pendingCrewCount > 0 && (
+                <span className="ml-1.5 bg-amber-400 text-black text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                  {pendingCrewCount}
+                </span>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="attendance" data-ocid="admin.tab">
+              Attendance
             </TabsTrigger>
             <TabsTrigger value="waitlist" data-ocid="admin.tab">
               Waitlist
@@ -250,12 +505,11 @@ export function AdminDashboard() {
 
           {/* Car Owners Tab */}
           <TabsContent value="owners">
-            {/* Active/Inactive summary */}
             <div className="grid grid-cols-2 gap-4 mb-5">
               <div className="p-4 rounded-xl bg-green-900/20 border border-green-700/30 flex items-center gap-3">
                 <CheckCircle2 className="w-5 h-5 text-green-400" />
                 <div>
-                  <p className="text-2xl font-display font-800 text-green-400">
+                  <p className="text-2xl font-display font-extrabold text-green-400">
                     {activeOwnersCount}
                   </p>
                   <p className="text-xs text-muted-foreground">
@@ -266,7 +520,7 @@ export function AdminDashboard() {
               <div className="p-4 rounded-xl bg-destructive/10 border border-destructive/20 flex items-center gap-3">
                 <XCircle className="w-5 h-5 text-destructive" />
                 <div>
-                  <p className="text-2xl font-display font-800 text-destructive">
+                  <p className="text-2xl font-display font-extrabold text-destructive">
                     {inactiveOwnersCount}
                   </p>
                   <p className="text-xs text-muted-foreground">Inactive</p>
@@ -276,7 +530,7 @@ export function AdminDashboard() {
 
             <div className="bg-card rounded-2xl border border-border overflow-hidden">
               <div className="p-5 border-b border-border">
-                <h2 className="text-lg font-display font-700">
+                <h2 className="text-lg font-display font-bold">
                   All Car Owners
                 </h2>
               </div>
@@ -325,7 +579,7 @@ export function AdminDashboard() {
                           {owner.phone}
                         </TableCell>
                         <TableCell className="text-sm">
-                          {owner.carNumber} · {owner.carModel}
+                          {owner.carNumber} &middot; {owner.carModel}
                         </TableCell>
                         <TableCell>
                           <Badge variant="secondary">
@@ -333,7 +587,7 @@ export function AdminDashboard() {
                           </Badge>
                         </TableCell>
                         <TableCell className="font-semibold">
-                          ₹{Number(owner.priceSegment)}
+                          &#8377;{Number(owner.priceSegment)}
                         </TableCell>
                         <TableCell>
                           <Badge
@@ -366,25 +620,35 @@ export function AdminDashboard() {
 
           {/* Crew Tab */}
           <TabsContent value="crew">
-            {/* Active/Inactive summary */}
-            <div className="grid grid-cols-2 gap-4 mb-5">
+            <div className="grid grid-cols-3 gap-4 mb-5">
               <div className="p-4 rounded-xl bg-green-900/20 border border-green-700/30 flex items-center gap-3">
                 <CheckCircle2 className="w-5 h-5 text-green-400" />
                 <div>
-                  <p className="text-2xl font-display font-800 text-green-400">
+                  <p className="text-2xl font-display font-extrabold text-green-400">
                     {activeCrewCount}
                   </p>
                   <p className="text-xs text-muted-foreground">Active Crew</p>
                 </div>
               </div>
+              <div className="p-4 rounded-xl bg-amber-400/10 border border-amber-400/25 flex items-center gap-3">
+                <Clock className="w-5 h-5 text-amber-400" />
+                <div>
+                  <p className="text-2xl font-display font-extrabold text-amber-400">
+                    {pendingCrewCount}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Pending Approval
+                  </p>
+                </div>
+              </div>
               <div className="p-4 rounded-xl bg-destructive/10 border border-destructive/20 flex items-center gap-3">
                 <XCircle className="w-5 h-5 text-destructive" />
                 <div>
-                  <p className="text-2xl font-display font-800 text-destructive">
+                  <p className="text-2xl font-display font-extrabold text-destructive">
                     {inactiveCrewCount}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Inactive / Pending
+                    Inactive / Rejected
                   </p>
                 </div>
               </div>
@@ -392,7 +656,7 @@ export function AdminDashboard() {
 
             <div className="bg-card rounded-2xl border border-border overflow-hidden">
               <div className="p-5 border-b border-border">
-                <h2 className="text-lg font-display font-700">
+                <h2 className="text-lg font-display font-bold">
                   All Crew Members
                 </h2>
               </div>
@@ -417,40 +681,203 @@ export function AdminDashboard() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
                       <TableHead>Phone</TableHead>
-                      <TableHead>Status</TableHead>
+                      <TableHead>Approval Status</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {allCrewMembers.map((member, idx) => (
+                    {allCrewMembers.map((member, idx) => {
+                      const crewWithPrincipal = activeCrew.find(
+                        ([, m]) => m.phone === member.phone,
+                      );
+                      return (
+                        <TableRow
+                          key={`${member.name}-${member.phone}`}
+                          data-ocid={`admin.crew.row.${idx + 1}`}
+                        >
+                          <TableCell className="font-medium">
+                            {member.name}
+                          </TableCell>
+                          <TableCell className="text-muted-foreground text-sm">
+                            {member.email}
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">
+                            {member.phone}
+                          </TableCell>
+                          <TableCell>
+                            {member.approvalStatus ===
+                            ApprovalStatus.pending ? (
+                              <Badge className="bg-amber-400/15 text-amber-500 border-amber-400/30">
+                                <Clock className="w-3 h-3 mr-1" />
+                                Pending Approval
+                              </Badge>
+                            ) : member.approvalStatus ===
+                              ApprovalStatus.approved ? (
+                              <Badge className="bg-green-900/40 text-green-300 border-green-700/30">
+                                <CheckCircle2 className="w-3 h-3 mr-1" /> Active
+                              </Badge>
+                            ) : (
+                              <Badge className="bg-destructive/10 text-destructive">
+                                <XCircle className="w-3 h-3 mr-1" /> Rejected
+                              </Badge>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {member.approvalStatus === ApprovalStatus.pending &&
+                            crewWithPrincipal ? (
+                              <div className="flex gap-2">
+                                <Button
+                                  size="sm"
+                                  className="bg-green-600 hover:bg-green-700 text-white text-xs h-7"
+                                  onClick={() =>
+                                    handleApprove(crewWithPrincipal)
+                                  }
+                                  data-ocid={`admin.crew.confirm_button.${idx + 1}`}
+                                >
+                                  Approve
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  className="text-xs h-7"
+                                  onClick={() =>
+                                    handleReject(crewWithPrincipal)
+                                  }
+                                  data-ocid={`admin.crew.delete_button.${idx + 1}`}
+                                >
+                                  Reject
+                                </Button>
+                              </div>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">
+                                No actions
+                              </span>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              )}
+            </div>
+          </TabsContent>
+
+          {/* Attendance Tab */}
+          <TabsContent value="attendance">
+            <div className="mb-5">
+              <h2 className="text-lg font-display font-bold mb-1">
+                Crew Attendance &amp; Work Hours
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Expand any crew member to view their attendance logs and release
+                weekly pay.
+              </p>
+            </div>
+
+            {activeCrew.length === 0 ? (
+              <div
+                className="text-center py-16 bg-card rounded-2xl border border-border"
+                data-ocid="admin.attendance.empty_state"
+              >
+                <Timer className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
+                <p className="text-muted-foreground text-sm">
+                  No active crew members found.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {activeCrew.map(([p, profile], idx) => (
+                  <CrewAttendanceRow
+                    key={p.toString()}
+                    crewPrincipal={p}
+                    crewProfile={profile}
+                    index={idx}
+                  />
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Waitlist Tab */}
+          <TabsContent value="waitlist">
+            <div className="bg-card rounded-2xl border border-border overflow-hidden">
+              <div className="p-5 border-b border-border flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg font-display font-bold">
+                    Waitlist Submissions
+                  </h2>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    People who signed up for the Noida launch
+                  </p>
+                </div>
+                <Badge className="bg-primary/10 text-primary border-primary/20">
+                  {waitlistEntries.length} entries
+                </Badge>
+              </div>
+              {waitlistLoading ? (
+                <div className="p-5 space-y-3" data-ocid="admin.loading_state">
+                  {[1, 2, 3].map((i) => (
+                    <Skeleton key={i} className="h-12 w-full" />
+                  ))}
+                </div>
+              ) : waitlistEntries.length === 0 ? (
+                <div
+                  className="text-center py-12"
+                  data-ocid="admin.waitlist.empty_state"
+                >
+                  <Bell className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
+                  <p className="text-muted-foreground text-sm">
+                    No waitlist submissions yet.
+                  </p>
+                  <p className="text-muted-foreground text-xs mt-1">
+                    Submissions from the homepage will appear here.
+                  </p>
+                </div>
+              ) : (
+                <Table data-ocid="admin.waitlist.table">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Phone</TableHead>
+                      <TableHead>Car Model</TableHead>
+                      <TableHead>Sector / Society</TableHead>
+                      <TableHead>Cars in Family</TableHead>
+                      <TableHead>Submitted</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {waitlistEntries.map((entry, idx) => (
                       <TableRow
-                        key={`${member.name}-${member.phone}`}
-                        data-ocid={`admin.crew.row.${idx + 1}`}
+                        key={`${entry.email}-${idx}`}
+                        data-ocid={`admin.waitlist.row.${idx + 1}`}
                       >
                         <TableCell className="font-medium">
-                          {member.name}
+                          {entry.name}
                         </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {member.phone}
+                        <TableCell className="text-muted-foreground text-sm">
+                          {entry.email}
                         </TableCell>
-                        <TableCell>
-                          <Badge
-                            className={
-                              member.isActive
-                                ? "bg-green-900/40 text-green-300 border-green-700/30"
-                                : "bg-destructive/10 text-destructive"
-                            }
-                          >
-                            {member.isActive ? (
-                              <>
-                                <CheckCircle2 className="w-3 h-3 mr-1" /> Active
-                              </>
-                            ) : (
-                              <>
-                                <XCircle className="w-3 h-3 mr-1" /> Inactive
-                              </>
-                            )}
-                          </Badge>
+                        <TableCell className="text-muted-foreground text-sm">
+                          {entry.phone}
+                        </TableCell>
+                        <TableCell className="text-sm">
+                          {entry.carModel}
+                        </TableCell>
+                        <TableCell className="text-sm">
+                          {entry.sectorSociety}
+                        </TableCell>
+                        <TableCell className="text-sm">
+                          {Number(entry.carsInFamily) || "N/A"}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground text-sm">
+                          {format(
+                            new Date(Number(entry.submittedAt) / 1_000_000),
+                            "MMM d, yyyy",
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -460,73 +887,11 @@ export function AdminDashboard() {
             </div>
           </TabsContent>
 
-          {/* Waitlist Tab */}
-          <TabsContent value="waitlist">
-            <div className="space-y-5">
-              <div className="p-5 rounded-2xl bg-amber-400/10 border border-amber-400/25 flex items-start gap-3">
-                <Bell className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-                <div className="text-sm">
-                  <p className="font-semibold text-foreground mb-1">
-                    Waitlist Data Access
-                  </p>
-                  <p className="text-muted-foreground">
-                    Waitlist submissions are collected via the Join Waitlist
-                    form on the homepage. To view and export waitlist data, you
-                    can connect the form to a backend database or email
-                    notification service. Contact the development team to enable
-                    full waitlist backend integration with data export
-                    (CSV/Excel) and automated notification features.
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-card rounded-2xl border border-border p-8 text-center">
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-5">
-                  <Bell className="w-8 h-8 text-primary" />
-                </div>
-                <h3 className="text-xl font-display font-700 mb-2">
-                  Waitlist Backend Coming Soon
-                </h3>
-                <p className="text-muted-foreground text-sm max-w-md mx-auto mb-6">
-                  Once the waitlist backend is integrated, you'll be able to
-                  view all registrants here with their name, email, phone, car
-                  model, society, and family car count. Entries will be sortable
-                  and exportable.
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-lg mx-auto text-left">
-                  {[
-                    { label: "Fields Collected", value: "6 fields per entry" },
-                    {
-                      label: "Form Location",
-                      value: "Homepage waitlist section",
-                    },
-                    {
-                      label: "Integration",
-                      value: "Backend API ready to connect",
-                    },
-                  ].map(({ label, value }) => (
-                    <div
-                      key={label}
-                      className="p-3 rounded-xl bg-secondary/30 border border-border/50"
-                    >
-                      <p className="text-xs text-muted-foreground mb-1">
-                        {label}
-                      </p>
-                      <p className="text-sm font-semibold text-foreground">
-                        {value}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </TabsContent>
-
           {/* Daily Schedule Tab */}
           <TabsContent value="schedule">
             <div className="bg-card rounded-2xl border border-border overflow-hidden">
               <div className="p-5 border-b border-border flex items-center gap-4">
-                <h2 className="text-lg font-display font-700">
+                <h2 className="text-lg font-display font-bold">
                   Daily Schedule
                 </h2>
                 <Input
@@ -573,13 +938,13 @@ export function AdminDashboard() {
                           data-ocid={`admin.schedule.row.${idx + 1}`}
                         >
                           <TableCell className="text-sm font-mono">
-                            {a.carOwnerId.toString().slice(0, 14)}…
+                            {a.carOwnerId.toString().slice(0, 14)}&hellip;
                           </TableCell>
                           <TableCell className="text-sm font-mono">
-                            {a.crewMemberId.toString().slice(0, 14)}…
+                            {a.crewMemberId.toString().slice(0, 14)}&hellip;
                           </TableCell>
                           <TableCell>
-                            {format(new Date(a.date), "MMM d, yyyy")}
+                            {format(parseISO(a.date), "MMM d, yyyy")}
                           </TableCell>
                           <TableCell>
                             <Badge className={config.className}>
@@ -599,7 +964,7 @@ export function AdminDashboard() {
           {/* Assign Tab */}
           <TabsContent value="assign">
             <div className="bg-card rounded-2xl border border-border p-7 max-w-lg">
-              <h2 className="text-lg font-display font-700 mb-6">
+              <h2 className="text-lg font-display font-bold mb-6">
                 Assign Car Owner to Crew
               </h2>
               <form onSubmit={handleAssign} className="space-y-5">
@@ -618,9 +983,10 @@ export function AdminDashboard() {
                           No active owners
                         </SelectItem>
                       ) : (
-                        activeOwners.map(([p, profile]) => (
+                        activeOwners.map(([p, ownerProfile]) => (
                           <SelectItem key={p.toString()} value={p.toString()}>
-                            {profile.name} · {profile.carNumber}
+                            {ownerProfile.name} &middot;{" "}
+                            {ownerProfile.carNumber}
                           </SelectItem>
                         ))
                       )}
@@ -640,9 +1006,9 @@ export function AdminDashboard() {
                           No active crew
                         </SelectItem>
                       ) : (
-                        activeCrew.map(([p, profile]) => (
+                        activeCrew.map(([p, crewProfile]) => (
                           <SelectItem key={p.toString()} value={p.toString()}>
-                            {profile.name} · {profile.phone}
+                            {crewProfile.name} &middot; {crewProfile.phone}
                           </SelectItem>
                         ))
                       )}
@@ -684,7 +1050,7 @@ export function AdminDashboard() {
 
       <footer className="py-6 border-t border-border mt-8">
         <p className="text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()}. Built with ❤️ using{" "}
+          &copy; {new Date().getFullYear()}. Built with &hearts; using{" "}
           <a
             href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
             target="_blank"

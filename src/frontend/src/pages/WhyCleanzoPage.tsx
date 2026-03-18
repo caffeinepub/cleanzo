@@ -57,7 +57,7 @@ const COMPARISON = [
   },
   {
     feature: "Flexibility",
-    cleanzo: "Skip up to 4 days/month",
+    cleanzo: "Skip up to 7 days/month",
     traditional: "Cancel-reschedule hassle",
   },
   {
@@ -86,7 +86,7 @@ const BENEFITS = [
   {
     icon: Calendar,
     title: "Skip days, total flexibility",
-    desc: "Travelling? On a holiday? Just skip up to 4 service days per month from your dashboard. No questions asked.",
+    desc: "Travelling? On a holiday? Just skip up to 7 service days per month from your dashboard. No questions asked.",
   },
 ];
 
@@ -164,7 +164,7 @@ export function WhyCleanzoPage() {
             </motion.p>
             <motion.h1
               variants={fadeUp}
-              className="text-5xl sm:text-6xl font-display font-800 leading-tight mb-6"
+              className="text-5xl sm:text-6xl font-display font-extrabold leading-tight mb-6"
             >
               A smarter way to <span className="text-gradient-blue">shine</span>
             </motion.h1>
@@ -189,7 +189,7 @@ export function WhyCleanzoPage() {
             variants={stagger}
           >
             <motion.div variants={fadeUp} className="text-center mb-12">
-              <h2 className="text-3xl font-display font-700">
+              <h2 className="text-3xl font-display font-bold">
                 Four reasons to switch today
               </h2>
             </motion.div>
@@ -205,7 +205,7 @@ export function WhyCleanzoPage() {
                       <Icon className="w-6 h-6 text-primary" />
                     </div>
                     <div>
-                      <h3 className="font-display font-700 text-lg mb-2">
+                      <h3 className="font-display font-bold text-lg mb-2">
                         {title}
                       </h3>
                       <p className="text-sm text-muted-foreground leading-relaxed">
@@ -230,7 +230,7 @@ export function WhyCleanzoPage() {
             variants={stagger}
           >
             <motion.div variants={fadeUp} className="text-center mb-12">
-              <h2 className="text-3xl font-display font-700 mb-3">
+              <h2 className="text-3xl font-display font-bold mb-3">
                 Cleanzo vs Traditional Car Wash
               </h2>
               <p className="text-muted-foreground">
@@ -289,7 +289,7 @@ export function WhyCleanzoPage() {
               <div className="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center mx-auto mb-6">
                 <Sparkles className="w-8 h-8 text-accent" />
               </div>
-              <h2 className="text-3xl font-display font-700 mb-5">
+              <h2 className="text-3xl font-display font-bold mb-5">
                 Why dry cleaning?
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-4 max-w-2xl mx-auto">

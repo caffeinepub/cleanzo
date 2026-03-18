@@ -118,7 +118,7 @@ export function ContactPage() {
             </motion.p>
             <motion.h1
               variants={fadeUp}
-              className="text-5xl sm:text-6xl font-display font-800 leading-tight mb-6"
+              className="text-5xl sm:text-6xl font-display font-extrabold leading-tight mb-6"
             >
               Get in <span className="text-gradient-blue">touch</span>
             </motion.h1>
@@ -143,7 +143,7 @@ export function ContactPage() {
             className="grid md:grid-cols-2 gap-12"
           >
             <motion.div variants={fadeUp}>
-              <h2 className="text-2xl font-display font-700 mb-6">
+              <h2 className="text-2xl font-display font-bold mb-6">
                 Send us a message
               </h2>
               <form onSubmit={handleSubmit} className="space-y-5">
@@ -205,7 +205,7 @@ export function ContactPage() {
 
             <motion.div variants={fadeUp} className="space-y-8">
               <div>
-                <h2 className="text-2xl font-display font-700 mb-6">
+                <h2 className="text-2xl font-display font-bold mb-6">
                   Connect with us
                 </h2>
                 <div className="space-y-4">
@@ -281,7 +281,7 @@ export function ContactPage() {
                   <ShieldCheck className="w-6 h-6 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <h2 className="text-xl font-display font-700 mb-1">
+                  <h2 className="text-xl font-display font-bold mb-1">
                     Grievance Officer
                   </h2>
                   <p className="text-xs text-muted-foreground mb-5">
@@ -301,11 +301,11 @@ export function ContactPage() {
                         Email
                       </p>
                       <a
-                        href="mailto:grievance@cleanzo"
+                        href="mailto:grievance@trycleanzo.in"
                         className="text-sm font-medium text-primary hover:underline flex items-center gap-1"
                       >
                         <Mail className="w-3.5 h-3.5" />
-                        grievance@cleanzo
+                        grievance@trycleanzo.in
                       </a>
                     </div>
                     <div className="p-4 rounded-xl bg-secondary/40 sm:col-span-2">
