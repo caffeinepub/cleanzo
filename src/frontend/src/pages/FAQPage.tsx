@@ -2,6 +2,7 @@ import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { Footer } from "../components/Footer";
 import { Header } from "../components/Header";
+import { PageDecor3D } from "../components/PageDecor3D";
 
 const FAQS = [
   {
@@ -48,7 +49,10 @@ export function FAQPage() {
       {/* Page Hero */}
       <section className="py-24 relative overflow-hidden border-b border-border/40">
         <div className="absolute inset-0 bg-gradient-to-br from-sky-50/60 via-white to-blue-50/30 dark:from-slate-800/60 dark:via-slate-900/40 dark:to-blue-950/30" />
-        <div className="relative max-w-4xl mx-auto px-6 sm:px-10 text-center">
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <PageDecor3D variant="helix" />
+        </div>
+        <div className="relative z-[1] max-w-4xl mx-auto px-6 sm:px-10 text-center">
           <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase bg-primary/10 text-primary border border-primary/20 px-3 py-1.5 rounded-full mb-6">
             FAQs
           </span>

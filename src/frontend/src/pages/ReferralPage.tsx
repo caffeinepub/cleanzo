@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CarOwnerRegistrationModal } from "../components/CarOwnerRegistrationModal";
 import { Footer } from "../components/Footer";
 import { Header } from "../components/Header";
+import { PageDecor3D } from "../components/PageDecor3D";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 
 export function ReferralPage() {
@@ -26,7 +27,10 @@ export function ReferralPage() {
       {/* Page Hero */}
       <section className="py-24 relative overflow-hidden border-b border-border/40">
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/60 via-white to-purple-50/40 dark:from-indigo-950/40 dark:via-slate-900 dark:to-purple-950/20" />
-        <div className="relative max-w-4xl mx-auto px-6 sm:px-10 text-center">
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <PageDecor3D variant="stars" />
+        </div>
+        <div className="relative z-[1] max-w-4xl mx-auto px-6 sm:px-10 text-center">
           <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 px-3 py-1.5 rounded-full mb-6">
             <Gift className="w-3 h-3" />
             Referral Program

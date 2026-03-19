@@ -106,7 +106,7 @@ export function ContactPage() {
       <section className="relative py-28 overflow-hidden">
         <div className="absolute inset-0 gradient-mesh" />
         <div className="absolute inset-0 z-0 pointer-events-none">
-          <PageDecor3D variant="orbs" />
+          <PageDecor3D variant="waves" />
         </div>
         <div className="relative z-[1] max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <motion.div initial="hidden" animate="visible" variants={stagger}>

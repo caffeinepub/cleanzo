@@ -3,7 +3,7 @@ import { Suspense, useMemo, useRef } from "react";
 import type { Group, Mesh, Points } from "three";
 import type * as THREE from "three";
 
-// Single animated orb — each has its own ref and useFrame
+// Single animated orb
 function Orb({
   x,
   y,
@@ -47,7 +47,7 @@ function Orb({
   );
 }
 
-// --- Orbs variant ---
+// --- Orbs variant (About Us) ---
 function FloatingOrbs() {
   const orbData = useMemo(
     () => [
@@ -154,7 +154,6 @@ function FloatingOrbs() {
     ],
     [],
   );
-
   return (
     <>
       {orbData.map((orb) => (
@@ -164,12 +163,11 @@ function FloatingOrbs() {
   );
 }
 
-// --- Rings variant ---
+// --- Rings variant (Why Cleanzo) ---
 function RotatingRings() {
   const ring1 = useRef<Mesh>(null);
   const ring2 = useRef<Mesh>(null);
   const ring3 = useRef<Mesh>(null);
-
   useFrame((state) => {
     const t = state.clock.elapsedTime;
     if (ring1.current) {
@@ -186,7 +184,6 @@ function RotatingRings() {
       ring3.current.position.y = Math.sin(t * 0.4) * 0.3;
     }
   });
-
   return (
     <>
       <mesh ref={ring1} position={[-3.5, 0, -1]}>
@@ -223,11 +220,10 @@ function RotatingRings() {
   );
 }
 
-// --- Sparkles variant ---
+// --- Sparkles variant (Pricing) ---
 function ShimmerSparkles() {
   const ref = useRef<Points>(null);
   const groupRef = useRef<Group>(null);
-
   const { positions, colors } = useMemo(() => {
     const count = 220;
     const pos = new Float32Array(count * 3);
@@ -243,17 +239,14 @@ function ShimmerSparkles() {
     }
     return { positions: pos, colors: col };
   }, []);
-
   useFrame((state) => {
-    if (!ref.current) return;
-    if (!groupRef.current) return;
+    if (!ref.current || !groupRef.current) return;
     const mat = ref.current.material as THREE.PointsMaterial;
     mat.opacity = 0.5 + Math.sin(state.clock.elapsedTime * 1.5) * 0.3;
     groupRef.current.rotation.y = state.clock.elapsedTime * 0.05;
     groupRef.current.rotation.z =
       Math.sin(state.clock.elapsedTime * 0.2) * 0.05;
   });
-
   return (
     <group ref={groupRef}>
       <points ref={ref}>
@@ -273,8 +266,215 @@ function ShimmerSparkles() {
   );
 }
 
+// --- Waves variant (Contact) ---
+// Animated sine-wave ribbon meshes flowing across the scene
+function FlowingWaves() {
+  const wave1 = useRef<Mesh>(null);
+  const wave2 = useRef<Mesh>(null);
+  const wave3 = useRef<Mesh>(null);
+  useFrame((state) => {
+    const t = state.clock.elapsedTime;
+    if (wave1.current) {
+      wave1.current.position.y = Math.sin(t * 0.5) * 0.4;
+      wave1.current.rotation.z = Math.sin(t * 0.3) * 0.08;
+    }
+    if (wave2.current) {
+      wave2.current.position.y = Math.sin(t * 0.4 + 1.2) * 0.35 - 0.5;
+      wave2.current.rotation.z = Math.cos(t * 0.25) * 0.06;
+    }
+    if (wave3.current) {
+      wave3.current.position.y = Math.cos(t * 0.6 + 2.4) * 0.3 + 0.6;
+      wave3.current.rotation.z = Math.sin(t * 0.35 + 0.5) * 0.1;
+    }
+  });
+  return (
+    <>
+      <mesh ref={wave1} position={[0, 0, -2]} rotation={[0, 0, 0]}>
+        <torusGeometry args={[5.5, 0.025, 8, 80, Math.PI * 1.4]} />
+        <meshStandardMaterial
+          color="#38bdf8"
+          emissive="#38bdf8"
+          emissiveIntensity={1.1}
+          transparent
+          opacity={0.5}
+        />
+      </mesh>
+      <mesh
+        ref={wave2}
+        position={[0, -0.5, -2.5]}
+        rotation={[0, 0, Math.PI * 0.05]}
+      >
+        <torusGeometry args={[6.5, 0.018, 8, 80, Math.PI * 1.2]} />
+        <meshStandardMaterial
+          color="#00C9A7"
+          emissive="#00C9A7"
+          emissiveIntensity={0.9}
+          transparent
+          opacity={0.4}
+        />
+      </mesh>
+      <mesh
+        ref={wave3}
+        position={[0, 0.6, -1.5]}
+        rotation={[0, 0, -Math.PI * 0.04]}
+      >
+        <torusGeometry args={[4.2, 0.022, 8, 80, Math.PI * 1.6]} />
+        <meshStandardMaterial
+          color="#818cf8"
+          emissive="#818cf8"
+          emissiveIntensity={0.8}
+          transparent
+          opacity={0.45}
+        />
+      </mesh>
+    </>
+  );
+}
+
+// --- Stars variant (Referral) ---
+// Slow drifting star field with golden twinkling particles
+function DriftingStars() {
+  const ref = useRef<Points>(null);
+  const groupRef = useRef<Group>(null);
+  const { positions, colors } = useMemo(() => {
+    const count = 180;
+    const pos = new Float32Array(count * 3);
+    const col = new Float32Array(count * 3);
+
+    for (let i = 0; i < count; i++) {
+      pos[i * 3] = (Math.random() - 0.5) * 20;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 5;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 6;
+      const isGold = Math.random() > 0.5;
+      col[i * 3] = isGold ? 0.95 : 0.55;
+      col[i * 3 + 1] = isGold ? 0.78 : 0.65;
+      col[i * 3 + 2] = isGold ? 0.2 : 0.95;
+    }
+    return { positions: pos, colors: col };
+  }, []);
+  useFrame((state) => {
+    if (!ref.current || !groupRef.current) return;
+    const mat = ref.current.material as THREE.PointsMaterial;
+    mat.opacity = 0.4 + Math.sin(state.clock.elapsedTime * 0.8) * 0.35;
+    groupRef.current.rotation.y = state.clock.elapsedTime * 0.025;
+    groupRef.current.position.x =
+      Math.sin(state.clock.elapsedTime * 0.15) * 0.3;
+  });
+  return (
+    <group ref={groupRef}>
+      <points ref={ref}>
+        <bufferGeometry>
+          <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+          <bufferAttribute attach="attributes-color" args={[colors, 3]} />
+        </bufferGeometry>
+        <pointsMaterial
+          size={0.09}
+          transparent
+          opacity={0.6}
+          sizeAttenuation
+          vertexColors
+        />
+      </points>
+    </group>
+  );
+}
+
+// --- Helix variant (FAQ) ---
+// Two intertwined rotating helices suggesting knowledge/structure
+function DoubleHelix() {
+  const group = useRef<Group>(null);
+  const helixData = useMemo(() => {
+    const count = 32;
+    const data: {
+      x1: number;
+      y: number;
+      z1: number;
+      x2: number;
+      z2: number;
+    }[] = [];
+    for (let i = 0; i < count; i++) {
+      const t = (i / count) * Math.PI * 4 - Math.PI * 2;
+      const radius = 0.6;
+      data.push({
+        x1: Math.cos(t) * radius,
+        y: (i / count) * 4 - 2,
+        z1: Math.sin(t) * radius,
+        x2: Math.cos(t + Math.PI) * radius,
+        z2: Math.sin(t + Math.PI) * radius,
+      });
+    }
+    return data;
+  }, []);
+  useFrame((state) => {
+    if (!group.current) return;
+    group.current.rotation.y = state.clock.elapsedTime * 0.3;
+    group.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.18) * 0.15;
+  });
+  return (
+    <group ref={group}>
+      {helixData.map((d, idx) => (
+        <group key={`helix-${d.x1.toFixed(3)}-${d.y.toFixed(3)}`}>
+          <mesh position={[d.x1 * 8 - 4, d.y, d.z1 * 1.5 - 2]}>
+            <sphereGeometry args={[0.1, 8, 8]} />
+            <meshStandardMaterial
+              color="#2563eb"
+              emissive="#3b82f6"
+              emissiveIntensity={1.2}
+              transparent
+              opacity={0.8}
+            />
+          </mesh>
+          <mesh position={[d.x2 * 8 + 4, d.y, d.z2 * 1.5 - 2]}>
+            <sphereGeometry args={[0.08, 8, 8]} />
+            <meshStandardMaterial
+              color="#00C9A7"
+              emissive="#00C9A7"
+              emissiveIntensity={1.0}
+              transparent
+              opacity={0.75}
+            />
+          </mesh>
+          {idx % 4 === 0 && (
+            <mesh
+              position={[
+                (d.x1 * 8 - 4 + d.x2 * 8 + 4) / 2,
+                d.y,
+                ((d.z1 - d.z2) * 1.5) / 2 - 2,
+              ]}
+            >
+              <cylinderGeometry
+                args={[
+                  0.015,
+                  0.015,
+                  Math.abs(d.x1 * 8 - 4 - (d.x2 * 8 + 4)),
+                  6,
+                ]}
+              />
+              <meshStandardMaterial
+                color="#94a3b8"
+                emissive="#94a3b8"
+                emissiveIntensity={0.5}
+                transparent
+                opacity={0.4}
+              />
+            </mesh>
+          )}
+        </group>
+      ))}
+    </group>
+  );
+}
+
+export type PageDecor3DVariant =
+  | "orbs"
+  | "rings"
+  | "sparkles"
+  | "waves"
+  | "stars"
+  | "helix";
+
 interface PageDecor3DProps {
-  variant: "orbs" | "rings" | "sparkles";
+  variant: PageDecor3DVariant;
 }
 
 function SceneContent({ variant }: PageDecor3DProps) {
@@ -286,6 +486,9 @@ function SceneContent({ variant }: PageDecor3DProps) {
       {variant === "orbs" && <FloatingOrbs />}
       {variant === "rings" && <RotatingRings />}
       {variant === "sparkles" && <ShimmerSparkles />}
+      {variant === "waves" && <FlowingWaves />}
+      {variant === "stars" && <DriftingStars />}
+      {variant === "helix" && <DoubleHelix />}
     </>
   );
 }
