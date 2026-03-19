@@ -6,10 +6,12 @@ import {
   Car,
   CheckCircle2,
   Clock,
+  Gift,
+  Share2,
   Shield,
   Sparkles,
   Star,
-  UserPlus,
+  UserCheck,
 } from "lucide-react";
 import { motion } from "motion/react";
 import { Suspense, useEffect, useRef, useState } from "react";
@@ -220,88 +222,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* ── Section 2: How It Works ──────────────────── */}
-      <section className="py-32 relative border-t border-border/30">
-        <div className="absolute inset-0 bg-gradient-to-br from-sky-50/60 via-white/40 to-blue-50/30 dark:from-slate-800/60 dark:via-slate-900/40 dark:to-blue-950/30" />
-        <div className="relative max-w-[1400px] mx-auto px-6 sm:px-10 lg:px-16">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={stagger}
-            className="text-center mb-16"
-          >
-            <motion.div variants={fadeUp} className="mb-4">
-              <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase bg-primary/10 text-primary border border-primary/20 px-3 py-1.5 rounded-full">
-                Simple Process
-              </span>
-            </motion.div>
-            <motion.h2
-              variants={fadeUp}
-              className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold mb-4"
-            >
-              How It Works
-            </motion.h2>
-            <motion.p
-              variants={fadeUp}
-              className="text-muted-foreground text-lg"
-            >
-              Clean car in 3 simple steps
-            </motion.p>
-          </motion.div>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={stagger}
-            className="grid md:grid-cols-3 gap-8"
-          >
-            {[
-              {
-                step: "01",
-                icon: UserPlus,
-                title: "Sign Up",
-                desc: "Register your car and choose your plan. Takes less than 2 minutes.",
-              },
-              {
-                step: "02",
-                icon: Car,
-                title: "Crew Arrives (5am–10am)",
-                desc: "Our trained crew arrives between 5am and 10am, rain or shine. You get a notification when they're on their way.",
-              },
-              {
-                step: "03",
-                icon: Sparkles,
-                title: "Car is Clean",
-                desc: "Your car is spotless before you start your day. Every single morning.",
-              },
-            ].map(({ step, icon: Icon, title, desc }) => (
-              <motion.div
-                key={step}
-                variants={fadeUp}
-                className="relative p-9 rounded-2xl bg-card border border-border/60 hover:border-primary/40 transition-all hover:-translate-y-1.5 group overflow-hidden"
-              >
-                <span className="absolute -top-4 -right-2 text-9xl font-display font-extrabold text-foreground/5 select-none">
-                  {step}
-                </span>
-                <div className="relative">
-                  <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
-                    <Icon className="w-7 h-7 text-primary" />
-                  </div>
-                  <h3 className="font-display font-bold text-foreground mb-3 text-2xl">
-                    {title}
-                  </h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    {desc}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── Section 2.5: VIP Waitlist ────────────────── */}
+      {/* ── Section 2: Launching in Noida Soon ──────── */}
       <section className="py-20 relative border-t border-border/30 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-sky-400/15 to-blue-600/10 dark:from-indigo-900/40 dark:via-sky-900/30 dark:to-blue-950/40" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_oklch(0.65_0.18_245/0.12)_0%,_transparent_70%)]" />
@@ -350,13 +271,13 @@ export function LandingPage() {
               variants={fadeUp}
               className="mt-4 text-sm text-muted-foreground"
             >
-              Join 100+ Noida residents already on the list
+              Join Noida residents already on the list
             </motion.p>
           </motion.div>
         </div>
       </section>
 
-      {/* ── Section 3: Pricing Preview ───────────────── */}
+      {/* ── Section 3: Pricing ───────────────────────── */}
       <section
         className="py-32 relative overflow-hidden border-t border-border/30"
         id="pricing"
@@ -370,6 +291,11 @@ export function LandingPage() {
             variants={stagger}
             className="text-center mb-16"
           >
+            <motion.div variants={fadeUp} className="mb-4">
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase bg-primary/10 text-primary border border-primary/20 px-3 py-1.5 rounded-full">
+                Pricing
+              </span>
+            </motion.div>
             <motion.h2
               variants={fadeUp}
               className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold mb-4"
@@ -491,6 +417,137 @@ export function LandingPage() {
             >
               See all pricing details and features →
             </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── Section 4: Referral Program ──────────────── */}
+      <section className="py-32 relative overflow-hidden border-t border-border/30">
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-600/10 via-purple-500/8 to-indigo-600/12 dark:from-violet-900/50 dark:via-purple-900/40 dark:to-indigo-950/50" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_oklch(0.55_0.22_300/0.15)_0%,_transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_oklch(0.60_0.20_270/0.12)_0%,_transparent_60%)]" />
+        <div className="max-w-[1400px] mx-auto px-6 sm:px-10 lg:px-16 relative">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={stagger}
+            className="text-center mb-16"
+          >
+            <motion.div variants={fadeUp} className="mb-4">
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase bg-violet-500/15 text-violet-600 dark:text-violet-400 border border-violet-400/30 px-3 py-1.5 rounded-full">
+                <Gift className="w-3 h-3" />
+                Referral Program
+              </span>
+            </motion.div>
+            <motion.h2
+              variants={fadeUp}
+              className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold mb-4"
+            >
+              Refer a Friend,{" "}
+              <span
+                style={{
+                  background:
+                    "linear-gradient(135deg, oklch(0.60 0.22 300), oklch(0.55 0.20 270))",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}
+              >
+                Save ₹100
+              </span>
+            </motion.h2>
+            <motion.p
+              variants={fadeUp}
+              className="text-muted-foreground text-lg max-w-xl mx-auto"
+            >
+              Invite a friend to Cleanzo. When they subscribe, you get ₹100 off
+              your next month. Simple.
+            </motion.p>
+          </motion.div>
+
+          {/* 3-step visual */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={stagger}
+            className="grid sm:grid-cols-3 gap-6 max-w-3xl mx-auto mb-14"
+          >
+            {[
+              {
+                icon: Share2,
+                step: "1",
+                title: "You Share Your Code",
+                desc: "Get your unique referral link from your dashboard and send it to a friend.",
+              },
+              {
+                icon: UserCheck,
+                step: "2",
+                title: "Friend Subscribes",
+                desc: "Your friend signs up and starts their Cleanzo subscription using your link.",
+              },
+              {
+                icon: Gift,
+                step: "3",
+                title: "You Save ₹100",
+                desc: "Once they subscribe, ₹100 is automatically deducted from your next month's bill.",
+              },
+            ].map(({ icon: Icon, step, title, desc }) => (
+              <motion.div
+                key={step}
+                variants={fadeUp}
+                className="relative p-8 rounded-2xl bg-card/80 border border-violet-400/20 hover:border-violet-400/50 transition-all hover:-translate-y-1.5 text-center group backdrop-blur-sm"
+              >
+                <div className="w-12 h-12 rounded-full bg-violet-500/15 flex items-center justify-center mx-auto mb-4 group-hover:bg-violet-500/25 transition-colors">
+                  <Icon className="w-6 h-6 text-violet-600 dark:text-violet-400" />
+                </div>
+                <div className="absolute top-4 right-4 text-4xl font-display font-extrabold text-foreground/5 select-none">
+                  {step}
+                </div>
+                <h3 className="font-display font-bold text-foreground mb-2 text-lg">
+                  {title}
+                </h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  {desc}
+                </p>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* CTA */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={stagger}
+            className="text-center"
+          >
+            <motion.div variants={fadeUp}>
+              <Button
+                size="lg"
+                onClick={handleJoinOwner}
+                className="text-base px-10 py-6 h-auto shadow-lg transition-all"
+                style={{
+                  background:
+                    "linear-gradient(135deg, oklch(0.55 0.22 300), oklch(0.50 0.20 270))",
+                  color: "white",
+                  boxShadow: "0 8px 30px oklch(0.55 0.22 300 / 0.3)",
+                }}
+                data-ocid="referral.primary_button"
+              >
+                <Gift className="w-5 h-5 mr-2" />
+                Get Started to Refer
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </motion.div>
+            <motion.p
+              variants={fadeUp}
+              className="mt-4 text-sm text-muted-foreground"
+            >
+              Only the referrer gets the discount. New subscribers pay the
+              standard price.
+            </motion.p>
           </motion.div>
         </div>
       </section>
