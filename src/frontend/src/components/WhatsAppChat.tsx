@@ -127,7 +127,7 @@ export function WhatsAppChat() {
                   className="flex items-center gap-3 px-4 py-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-green-400 dark:hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all text-left group"
                   data-ocid="helpdesk.button"
                 >
-                  <span className="text-2xl">🧹</span>
+                  <span className="text-2xl">👷</span>
                   <div>
                     <p className="font-semibold text-gray-800 dark:text-gray-100 text-sm">
                       Cleanzo Crew
