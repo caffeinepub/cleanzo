@@ -22,10 +22,12 @@ import { AboutPage } from "./pages/AboutPage";
 import { AdminDashboard } from "./pages/AdminDashboard";
 import { ContactPage } from "./pages/ContactPage";
 import { CrewDashboard } from "./pages/CrewDashboard";
+import { FAQPage } from "./pages/FAQPage";
 import { LandingPage } from "./pages/LandingPage";
 import { OwnerDashboard } from "./pages/OwnerDashboard";
 import { PricingPage } from "./pages/PricingPage";
 import { PrivacyPolicyPage } from "./pages/PrivacyPolicyPage";
+import { ReferralPage } from "./pages/ReferralPage";
 import { RefundPolicyPage } from "./pages/RefundPolicyPage";
 import { TermsPage } from "./pages/TermsPage";
 import { WhyCleanzoPage } from "./pages/WhyCleanzoPage";
@@ -131,6 +133,16 @@ const contactRoute = createRoute({
   path: "/contact",
   component: ContactPage,
 });
+const faqRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/faq",
+  component: FAQPage,
+});
+const referralRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/referral",
+  component: ReferralPage,
+});
 const ownerRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/owner",
@@ -168,6 +180,8 @@ const routeTree = rootRoute.addChildren([
   whyRoute,
   pricingRoute,
   contactRoute,
+  faqRoute,
+  referralRoute,
   ownerRoute,
   crewRoute,
   adminRoute,

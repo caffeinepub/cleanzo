@@ -1,21 +1,16 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowRight,
-  Bell,
-  Calendar,
   Car,
   CheckCircle2,
-  ChevronDown,
   Clock,
-  Gift,
-  MapPin,
+  HardHat,
   Shield,
   Sparkles,
   Star,
   UserPlus,
-  Wrench,
 } from "lucide-react";
 import { motion } from "motion/react";
 import { Suspense, useEffect, useRef, useState } from "react";
@@ -44,55 +39,10 @@ const stagger = {
   visible: { transition: { staggerChildren: 0.12 } },
 };
 
-const FEATURES = [
-  {
-    icon: Clock,
-    title: "Morning service, every day",
-    desc: "Our crew arrives between 5am and 10am, so your car is ready when you need it.",
-  },
-  {
-    icon: Calendar,
-    title: "Flexible skip days",
-    desc: "Travelling? Skip up to 7 days per month with a single tap on your dashboard.",
-  },
-  {
-    icon: Shield,
-    title: "Professional dry cleaning",
-    desc: "No water, no spots. Waterless cleaning technology for a perfect finish every time.",
-  },
-];
-
 const PLAN_FEATURES = [
   "Daily dry clean 5am to 10am",
   "Up to 7 skip days/month",
   "Real-time schedule tracking",
-];
-
-const FAQS = [
-  {
-    q: "What if it rains?",
-    a: "Our waterless dry cleaning process is 100% rain-proof. We clean your car even on rainy mornings — water spots are never a concern because we don't use water at all.",
-  },
-  {
-    q: "What products do you use?",
-    a: "We use professional-grade, chemical-safe waterless cleaning solutions that are imported and tested for Indian climate conditions. They remove dust, grime, and light stains without scratching your paint.",
-  },
-  {
-    q: "Can I pause my subscription?",
-    a: "Yes. You can skip up to 7 days per month from your dashboard with a single tap. Need a longer break? Just reach out to us on WhatsApp and we'll sort it out.",
-  },
-  {
-    q: "What time does the crew arrive?",
-    a: "Our crew operates between 5am and 10am daily. You'll receive a notification when they're on their way, so you always know when to expect them.",
-  },
-  {
-    q: "Which car types do you service?",
-    a: "We service all car types — hatchbacks, sedans, mid-SUVs at ₹399/month, and full-size SUVs and 7-seaters at ₹449/month. If you're unsure about your car type, WhatsApp us and we'll confirm.",
-  },
-  {
-    q: "Is there a contract or lock-in period?",
-    a: "No lock-ins. Cleanzo is month-to-month. You can cancel anytime from your dashboard. We earn your trust every morning — not through contracts.",
-  },
 ];
 
 export function LandingPage() {
@@ -103,7 +53,6 @@ export function LandingPage() {
   const [ownerModalOpen, setOwnerModalOpen] = useState(false);
   const [crewModalOpen, setCrewModalOpen] = useState(false);
   const [waitlistOpen, setWaitlistOpen] = useState(false);
-  const [openFaq, setOpenFaq] = useState<string | null>(null);
 
   const { data: role } = useUserRole();
   const principal = isLoggedIn ? identity.getPrincipal() : undefined;
@@ -167,15 +116,13 @@ export function LandingPage() {
         onWaitlist={() => setWaitlistOpen(true)}
       />
 
-      {/* ── Hero ─────────────────────────────────────── */}
+      {/* ── Section 1: Hero ─────────────────────────── */}
       <section className="relative min-h-[95vh] flex items-center overflow-hidden noise-bg">
-        {/* 3D Canvas background */}
         <div className="absolute inset-0 z-0">
           <Suspense fallback={null}>
             <Hero3D />
           </Suspense>
         </div>
-        {/* gradient overlay so text is legible */}
         <div className="absolute inset-0 z-[1] gradient-mesh" />
         <div className="absolute inset-0 z-[2] bg-gradient-to-r from-background/95 via-background/70 to-transparent" />
 
@@ -187,7 +134,6 @@ export function LandingPage() {
             variants={stagger}
           >
             <motion.div variants={fadeUp}>
-              {/* Trial offer + Service hours INLINE */}
               <div className="flex flex-wrap items-center gap-3 mb-5">
                 <span className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground border border-primary/50 text-sm font-bold px-4 py-2 rounded-full shadow-md">
                   <Star className="w-3.5 h-3.5 fill-current" />
@@ -275,7 +221,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* ── How It Works ─────────────────────────────── */}
+      {/* ── Section 2: How It Works ──────────────────── */}
       <section className="py-32 relative border-t border-border/30">
         <div className="absolute inset-0 bg-gradient-to-br from-sky-50/60 via-white/40 to-blue-50/30 dark:from-slate-800/60 dark:via-slate-900/40 dark:to-blue-950/30" />
         <div className="relative max-w-[1400px] mx-auto px-6 sm:px-10 lg:px-16">
@@ -356,137 +302,62 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* ── Waitlist / Noida Launch ──────────────────── */}
-      <section className="py-28 relative overflow-hidden border-t border-border/30">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-amber-400/5" />
-        <div className="absolute inset-0 noise-bg opacity-30" />
+      {/* ── Section 2.5: VIP Waitlist ────────────────── */}
+      <section className="py-20 relative border-t border-border/30 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-sky-400/15 to-blue-600/10 dark:from-indigo-900/40 dark:via-sky-900/30 dark:to-blue-950/40" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_oklch(0.65_0.18_245/0.12)_0%,_transparent_70%)]" />
         <div className="relative max-w-[1400px] mx-auto px-6 sm:px-10 lg:px-16">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={stagger}
-            className="flex flex-col lg:flex-row items-center gap-14"
+            className="text-center max-w-2xl mx-auto"
           >
-            <motion.div
-              variants={fadeUp}
-              className="flex-1 text-center lg:text-left"
-            >
-              <div className="flex items-center justify-center lg:justify-start gap-2 mb-5">
-                <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase bg-primary/15 text-primary border border-primary/25 px-3 py-1.5 rounded-full">
-                  <MapPin className="w-3 h-3" />
-                  Coming Soon to Noida
-                </span>
-              </div>
-              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display font-extrabold mb-5 leading-tight">
-                Cleanzo is launching in{" "}
-                <span className="text-gradient-blue">Noida</span>! 🎉
-              </h2>
-              <p className="text-muted-foreground text-lg leading-relaxed mb-7">
-                We're bringing our premium car exterior dry cleaning service to
-                Noida residents. Be among the first to experience Cleanzo in
-                your society.
-              </p>
-              <ul className="space-y-3 text-sm text-muted-foreground mb-6 text-left">
-                {[
-                  "Early bird pricing locked for waitlist members",
-                  "Priority slot booking when we launch",
-                  "Exclusive first-week offer",
-                ].map((item) => (
-                  <li key={item} className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
+            <motion.div variants={fadeUp} className="mb-4">
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-400/30 px-3 py-1.5 rounded-full">
+                <Star className="w-3 h-3 fill-current" />
+                Noida Launch — Limited Spots
+              </span>
             </motion.div>
-
-            <motion.div
-              variants={fadeUp}
-              className="flex-shrink-0 w-full lg:w-auto flex flex-col items-center gap-4"
-            >
-              <div className="luxury-card-wrapper-featured">
-                <div className="w-full lg:w-96 p-10 rounded-[1.2rem] bg-card text-center">
-                  <div className="w-16 h-16 rounded-full bg-amber-400/15 flex items-center justify-center mx-auto mb-5">
-                    <Bell className="w-8 h-8 text-amber-400" />
-                  </div>
-                  <h3 className="font-display font-bold text-2xl mb-2">
-                    Get Early Access
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-7">
-                    Join 100+ Noida residents already on the waitlist.
-                  </p>
-                  <Button
-                    size="lg"
-                    className="w-full text-base py-6 h-auto"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, oklch(0.78 0.15 75), oklch(0.65 0.18 60))",
-                      color: "oklch(0.12 0.01 255)",
-                    }}
-                    onClick={() => setWaitlistOpen(true)}
-                    data-ocid="waitlist.primary_button"
-                  >
-                    <MapPin className="w-4 h-4 mr-2" />
-                    Join the Waitlist
-                  </Button>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── Features / Why Choose Cleanzo ────────────── */}
-      <section className="py-32 relative border-t border-border/30">
-        <div className="max-w-[1400px] mx-auto px-6 sm:px-10 lg:px-16">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={stagger}
-            className="text-center mb-16"
-          >
             <motion.h2
               variants={fadeUp}
-              className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold mb-4"
+              className="text-4xl sm:text-5xl font-display font-extrabold mb-4"
             >
-              Why choose Cleanzo?
+              Launching in <span className="text-gradient-blue">Noida</span>{" "}
+              Soon
             </motion.h2>
             <motion.p
               variants={fadeUp}
-              className="text-muted-foreground text-lg"
+              className="text-muted-foreground text-lg mb-8"
             >
-              The smarter way to keep your car clean.
+              Be among the first to experience Cleanzo in your area. VIP members
+              get priority scheduling, exclusive launch pricing, and early
+              access to all premium features.
             </motion.p>
-          </motion.div>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={stagger}
-            className="grid md:grid-cols-3 gap-8"
-          >
-            {FEATURES.map(({ icon: Icon, title, desc }) => (
-              <motion.div
-                key={title}
-                variants={fadeUp}
-                className="p-9 rounded-2xl bg-card border border-border/60 hover:border-primary/40 transition-all hover:-translate-y-1.5 group"
+            <motion.div variants={fadeUp}>
+              <Button
+                size="lg"
+                onClick={() => setWaitlistOpen(true)}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white text-base px-10 py-6 h-auto shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all"
+                data-ocid="waitlist.primary_button"
               >
-                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
-                  <Icon className="w-7 h-7 text-primary" />
-                </div>
-                <h3 className="font-display font-bold text-foreground mb-3 text-2xl">
-                  {title}
-                </h3>
-                <p className="text-muted-foreground leading-relaxed">{desc}</p>
-              </motion.div>
-            ))}
+                <Star className="w-5 h-5 mr-2 fill-current" />
+                Claim Your VIP Access
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </motion.div>
+            <motion.p
+              variants={fadeUp}
+              className="mt-4 text-sm text-muted-foreground"
+            >
+              Join 100+ Noida residents already on the list
+            </motion.p>
           </motion.div>
         </div>
       </section>
 
-      {/* ── Pricing preview ─────────────────────────── */}
+      {/* ── Section 3: Pricing Preview ───────────────── */}
       <section
         className="py-32 relative overflow-hidden border-t border-border/30"
         id="pricing"
@@ -566,7 +437,7 @@ export function LandingPage() {
             {/* SUV Plan */}
             <motion.div variants={fadeUp}>
               <div className="luxury-card-wrapper-featured">
-                <div className="bg-card rounded-[1.2rem] p-10 h-full relative overflow-hidden">
+                <div className="bg-card rounded-[1.2rem] p-10 h-full">
                   <div className="mb-7">
                     <h3 className="text-2xl font-display font-bold mb-1">
                       SUV Plan
@@ -605,126 +476,27 @@ export function LandingPage() {
               </div>
             </motion.div>
           </motion.div>
+
+          {/* See all pricing link */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            className="text-center mt-10"
+          >
+            <Link
+              to="/pricing"
+              className="inline-flex items-center gap-1.5 text-primary font-semibold hover:underline text-sm"
+              data-ocid="pricing.link"
+            >
+              See all pricing details and features →
+            </Link>
+          </motion.div>
         </div>
       </section>
 
-      {/* ── Referral Program ─────────────────────────── */}
-      <section className="py-28 relative overflow-hidden border-t border-border/30">
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/60 via-white to-purple-50/40 dark:from-indigo-950/40 dark:via-slate-900 dark:to-purple-950/20" />
-        <div className="relative max-w-[1400px] mx-auto px-6 sm:px-10 lg:px-16">
-          <div className="flex flex-col lg:flex-row items-center gap-12">
-            {/* left: text */}
-            <div className="flex-1 text-center lg:text-left">
-              <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 px-3 py-1.5 rounded-full mb-5">
-                <Gift className="w-3 h-3" />
-                Referral Program
-              </span>
-              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display font-extrabold mb-5 leading-tight">
-                Share Cleanzo,
-                <br />
-                <span className="text-gradient-blue">save ₹100</span> next month
-              </h2>
-              <p className="text-muted-foreground text-lg leading-relaxed mb-6 max-w-lg">
-                Love having a clean car every morning? Tell a friend. When they
-                subscribe, you both get ₹100 off your next month. No limits —
-                refer as many friends as you want.
-              </p>
-              <ul className="space-y-3 text-sm text-muted-foreground text-left max-w-sm mx-auto lg:mx-0">
-                {[
-                  "Share your unique referral link from your dashboard",
-                  "Friend subscribes using your link",
-                  "You both get ₹100 off next month — automatically",
-                ].map((item) => (
-                  <li key={item} className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-indigo-500 shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            {/* right: card */}
-            <div className="flex-shrink-0 w-full lg:w-96">
-              <div className="p-10 rounded-2xl bg-white dark:bg-slate-800 border border-indigo-200 dark:border-indigo-700 shadow-xl shadow-indigo-100/50 dark:shadow-indigo-900/20 text-center">
-                <div className="w-16 h-16 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center mx-auto mb-5">
-                  <Gift className="w-8 h-8 text-indigo-500" />
-                </div>
-                <h3 className="font-display font-bold text-2xl mb-2">
-                  Refer a Friend
-                </h3>
-                <p className="text-muted-foreground text-sm mb-3">
-                  Get ₹100 off your next month
-                </p>
-                <div className="bg-indigo-50 dark:bg-indigo-900/30 rounded-xl p-4 mb-6">
-                  <p className="text-3xl font-display font-extrabold text-indigo-600 dark:text-indigo-300">
-                    ₹100
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    credited per successful referral
-                  </p>
-                </div>
-                <Button
-                  size="lg"
-                  className="w-full py-6 h-auto text-base bg-indigo-600 hover:bg-indigo-700 text-white"
-                  onClick={handleJoinOwner}
-                  data-ocid="referral.primary_button"
-                >
-                  <Gift className="w-4 h-4 mr-2" />
-                  Join and Start Referring
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── FAQ ──────────────────────────────────────── */}
-      <section className="py-28 relative border-t border-border/30">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-50/80 via-white to-blue-50/40 dark:from-slate-900/80 dark:via-slate-950 dark:to-blue-950/20" />
-        <div className="relative max-w-[1400px] mx-auto px-6 sm:px-10 lg:px-16">
-          <div className="text-center mb-14">
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase bg-primary/10 text-primary border border-primary/20 px-3 py-1.5 rounded-full mb-4">
-              FAQ
-            </span>
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold mb-4">
-              Common questions
-            </h2>
-            <p className="text-muted-foreground text-lg">
-              Everything you need to know before you subscribe.
-            </p>
-          </div>
-          <div className="max-w-3xl mx-auto space-y-3">
-            {FAQS.map((faq) => (
-              <div
-                key={faq.q}
-                className="bg-white dark:bg-slate-800 border border-border/60 rounded-2xl overflow-hidden"
-              >
-                <button
-                  type="button"
-                  onClick={() => setOpenFaq(openFaq === faq.q ? null : faq.q)}
-                  className="w-full flex items-center justify-between px-7 py-5 text-left hover:bg-secondary/30 transition-colors"
-                  data-ocid="faq.toggle"
-                >
-                  <span className="font-semibold text-base text-foreground">
-                    {faq.q}
-                  </span>
-                  <ChevronDown
-                    className={`w-5 h-5 text-muted-foreground transition-transform flex-shrink-0 ml-4 ${
-                      openFaq === faq.q ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-                {openFaq === faq.q && (
-                  <div className="px-7 pb-6 text-muted-foreground leading-relaxed text-sm border-t border-border/30 pt-4">
-                    {faq.a}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── CTA ─────────────────────────────────────── */}
+      {/* ── Section 4: Final CTA ─────────────────────── */}
       <section className="py-32 relative overflow-hidden border-t border-border/30">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-background to-amber-400/8" />
         <div className="relative max-w-4xl mx-auto px-6 sm:px-10 text-center">
@@ -742,47 +514,44 @@ export function LandingPage() {
             </motion.h2>
             <motion.p
               variants={fadeUp}
-              className="text-muted-foreground mb-3 text-xl font-medium"
+              className="text-muted-foreground mb-10 text-xl font-medium"
             >
               Subscribe today and wake up to a freshly cleaned car every day.
             </motion.p>
-            <motion.p
-              variants={fadeUp}
-              className="text-sm text-muted-foreground mb-10"
-            >
-              Don't have an account?{" "}
-              <button
-                type="button"
-                onClick={handleJoinOwner}
-                className="text-primary font-semibold hover:underline"
-                data-ocid="cta.link"
-              >
-                Sign up now →
-              </button>
-            </motion.p>
             <motion.div
               variants={fadeUp}
-              className="flex flex-wrap gap-4 justify-center"
+              className="flex flex-wrap gap-4 justify-center mb-6"
             >
               <Button
                 size="lg"
                 onClick={handleJoinOwner}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 h-auto text-base"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 glow-blue text-base px-8 py-6 h-auto"
                 data-ocid="cta.primary_button"
               >
                 <Car className="w-5 h-5 mr-2" />
                 Join as Car Owner
+                <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
               <Button
                 size="lg"
                 variant="outline"
                 onClick={handleJoinCrew}
-                className="border-border/60 hover:bg-secondary/60 px-8 py-6 h-auto text-base"
+                className="text-base px-8 py-6 h-auto"
                 data-ocid="cta.secondary_button"
               >
-                <Wrench className="w-5 h-5 mr-2" />
+                <HardHat className="w-5 h-5 mr-2" />
                 Join the Crew
               </Button>
+            </motion.div>
+            <motion.div variants={fadeUp}>
+              <button
+                type="button"
+                onClick={() => setWaitlistOpen(true)}
+                className="text-sm text-muted-foreground hover:text-primary transition-colors underline underline-offset-4"
+                data-ocid="cta.link"
+              >
+                Not in Noida yet? Claim Your VIP Access →
+              </button>
             </motion.div>
           </motion.div>
         </div>
@@ -792,15 +561,18 @@ export function LandingPage() {
 
       <CarOwnerRegistrationModal
         open={ownerModalOpen}
-        onOpenChange={setOwnerModalOpen}
+        onOpenChange={() => setOwnerModalOpen(false)}
         onSuccess={() => handleRegistrationSuccess("owner")}
       />
       <CrewRegistrationModal
         open={crewModalOpen}
-        onOpenChange={setCrewModalOpen}
+        onOpenChange={() => setCrewModalOpen(false)}
         onSuccess={() => handleRegistrationSuccess("crew")}
       />
-      <WaitlistModal open={waitlistOpen} onOpenChange={setWaitlistOpen} />
+      <WaitlistModal
+        open={waitlistOpen}
+        onOpenChange={() => setWaitlistOpen(false)}
+      />
     </div>
   );
 }

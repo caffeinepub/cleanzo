@@ -50,13 +50,15 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Legal */}
+          {/* Resources */}
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-              Legal
+              Resources
             </p>
             <ul className="space-y-2">
               {[
+                { to: "/faq", label: "FAQ" },
+                { to: "/referral", label: "Referral Program" },
                 { to: "/privacy-policy", label: "Privacy Policy" },
                 { to: "/terms", label: "Terms & Conditions" },
                 { to: "/refund-policy", label: "Refund Policy" },
@@ -82,7 +84,7 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <a
-                  href="https://instagram.com/trycleanzo.in"
+                  href="https://instagram.com/trycleanzo"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -94,7 +96,7 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="https://facebook.com/trycleanzo.in"
+                  href="https://facebook.com/trycleanzo"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -111,6 +113,17 @@ export function Footer() {
         <div className="pt-6 border-t border-border/30 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} Cleanzo. All rights reserved.
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Built with <span className="text-red-400">&#9829;</span> using{" "}
+            <a
+              href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(typeof window !== "undefined" ? window.location.hostname : "")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-foreground transition-colors"
+            >
+              caffeine.ai
+            </a>
           </p>
         </div>
       </div>

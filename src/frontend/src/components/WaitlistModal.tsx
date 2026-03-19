@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CheckCircle2, Loader2, MapPin } from "lucide-react";
+import { CheckCircle2, Loader2, Star } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useSubmitWaitlist } from "../hooks/useQueries";
@@ -316,20 +316,20 @@ export function WaitlistModal({ open, onOpenChange }: WaitlistModalProps) {
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         {submitted ? (
           <div className="py-10 flex flex-col items-center text-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-primary/15 flex items-center justify-center">
-              <CheckCircle2 className="w-8 h-8 text-primary" />
+            <div className="w-16 h-16 rounded-full bg-indigo-500/15 flex items-center justify-center">
+              <CheckCircle2 className="w-8 h-8 text-indigo-600" />
             </div>
             <div>
               <h3 className="text-2xl font-display font-bold mb-2">
-                You're on the list!
+                VIP Access Claimed!
               </h3>
               <p className="text-muted-foreground">
-                Thanks{" "}
+                Welcome aboard,{" "}
                 <span className="font-semibold text-foreground">
                   {form.name.split(" ")[0]}
                 </span>
-                ! We'll notify you as soon as Cleanzo launches in your area in
-                Noida.
+                ! You're now on the VIP list. We'll notify you the moment
+                Cleanzo launches in your area in Noida.
               </p>
             </div>
             <Button onClick={() => handleClose(false)} className="mt-2">
@@ -340,14 +340,15 @@ export function WaitlistModal({ open, onOpenChange }: WaitlistModalProps) {
           <>
             <DialogHeader>
               <div className="flex items-center gap-2 mb-1">
-                <MapPin className="w-5 h-5 text-primary" />
+                <Star className="w-5 h-5 text-indigo-600 fill-indigo-200" />
                 <DialogTitle className="text-xl font-display font-bold">
-                  Join the Waitlist for Noida
+                  Claim Your VIP Access
                 </DialogTitle>
               </div>
               <DialogDescription>
-                We're launching in Noida soon! Be the first to know when Cleanzo
-                arrives at your doorstep. Fill in your details below.
+                We're launching in Noida soon! Secure your VIP spot and get
+                priority scheduling, exclusive launch pricing, and early access
+                before anyone else.
               </DialogDescription>
             </DialogHeader>
 
@@ -493,15 +494,20 @@ export function WaitlistModal({ open, onOpenChange }: WaitlistModalProps) {
 
               <Button
                 type="submit"
-                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 mt-2"
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white mt-2"
                 disabled={submitting}
+                data-ocid="waitlist.submit_button"
               >
                 {submitting ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Joining...
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />{" "}
+                    Claiming...
                   </>
                 ) : (
-                  "Join the Waitlist"
+                  <>
+                    <Star className="w-4 h-4 mr-2 fill-current" />
+                    Claim Your VIP Access
+                  </>
                 )}
               </Button>
             </form>
