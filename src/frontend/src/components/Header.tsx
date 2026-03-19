@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { HardHat, Loader2, LogIn, LogOut, Menu, X } from "lucide-react";
+import { Loader2, LogIn, LogOut, Menu, UserCog, X } from "lucide-react";
 import { useState } from "react";
 
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
@@ -82,7 +82,7 @@ export function Header({ onJoinOwner, onJoinCrew }: HeaderProps) {
               className="px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/60 rounded-lg transition-colors flex items-center gap-1.5"
               data-ocid="nav.link"
             >
-              <HardHat className="w-3.5 h-3.5" />
+              <UserCog className="w-3.5 h-3.5" />
               Join as Crew
             </button>
           )}
@@ -190,7 +190,7 @@ export function Header({ onJoinOwner, onJoinCrew }: HeaderProps) {
               className="px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/60 rounded-lg transition-colors flex items-center gap-1.5 text-left"
               data-ocid="nav.link"
             >
-              <HardHat className="w-3.5 h-3.5" />
+              <UserCog className="w-3.5 h-3.5" />
               Join as Crew
             </button>
           )}
