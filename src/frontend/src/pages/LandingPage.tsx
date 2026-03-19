@@ -6,7 +6,6 @@ import {
   Car,
   CheckCircle2,
   Clock,
-  HardHat,
   Shield,
   Sparkles,
   Star,
@@ -492,67 +491,6 @@ export function LandingPage() {
             >
               See all pricing details and features →
             </Link>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── Section 4: Final CTA ─────────────────────── */}
-      <section className="py-32 relative overflow-hidden border-t border-border/30">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-background to-amber-400/8" />
-        <div className="relative max-w-4xl mx-auto px-6 sm:px-10 text-center">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={stagger}
-          >
-            <motion.h2
-              variants={fadeUp}
-              className="text-4xl sm:text-5xl lg:text-6xl font-display font-extrabold mb-5"
-            >
-              Ready for a spotless morning?
-            </motion.h2>
-            <motion.p
-              variants={fadeUp}
-              className="text-muted-foreground mb-10 text-xl font-medium"
-            >
-              Subscribe today and wake up to a freshly cleaned car every day.
-            </motion.p>
-            <motion.div
-              variants={fadeUp}
-              className="flex flex-wrap gap-4 justify-center mb-6"
-            >
-              <Button
-                size="lg"
-                onClick={handleJoinOwner}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 glow-blue text-base px-8 py-6 h-auto"
-                data-ocid="cta.primary_button"
-              >
-                <Car className="w-5 h-5 mr-2" />
-                Join as Car Owner
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                onClick={handleJoinCrew}
-                className="text-base px-8 py-6 h-auto"
-                data-ocid="cta.secondary_button"
-              >
-                <HardHat className="w-5 h-5 mr-2" />
-                Join the Crew
-              </Button>
-            </motion.div>
-            <motion.div variants={fadeUp}>
-              <button
-                type="button"
-                onClick={() => setWaitlistOpen(true)}
-                className="text-sm text-muted-foreground hover:text-primary transition-colors underline underline-offset-4"
-                data-ocid="cta.link"
-              >
-                Not in Noida yet? Claim Your VIP Access →
-              </button>
-            </motion.div>
           </motion.div>
         </div>
       </section>

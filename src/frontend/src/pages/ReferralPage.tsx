@@ -37,9 +37,10 @@ export function ReferralPage() {
             <span className="text-gradient-blue">earn ₹100 every month</span>
           </h1>
           <p className="text-muted-foreground text-lg leading-relaxed max-w-2xl mx-auto">
-            Love having a spotless car every morning? Tell a friend. When they
-            subscribe, you both get ₹100 off your next month. No limits on how
-            many friends you can refer.
+            Love having a spotless car every morning? Tell a friend. When a
+            friend subscribes using your link, you get ₹100 off your next
+            month's subscription. The discount is your reward for spreading the
+            word. No limits on how many friends you can refer.
           </p>
         </div>
       </section>
@@ -64,8 +65,8 @@ export function ReferralPage() {
               },
               {
                 step: "03",
-                title: "You both save ₹100",
-                desc: "Both you and your friend automatically get ₹100 credited to your next month's subscription. No forms, no waiting.",
+                title: "You save ₹100",
+                desc: "You automatically get ₹100 credited to your next month's subscription as a thank-you for the referral. No forms, no waiting — just a lower bill next month.",
               },
             ].map(({ step, title, desc }) => (
               <div
@@ -99,7 +100,7 @@ export function ReferralPage() {
               </h2>
               <ul className="space-y-4">
                 {[
-                  "Both you AND your friend get ₹100 — not just one of you",
+                  "You get ₹100 off your next month when your friend subscribes",
                   "No limit on how many friends you refer",
                   "Credit is applied automatically — no claim process",
                   "Works with all Cleanzo subscription plans",
@@ -131,7 +132,7 @@ export function ReferralPage() {
                     ₹100
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    credited per successful referral
+                    credited to you per successful referral
                   </p>
                 </div>
                 <Button
